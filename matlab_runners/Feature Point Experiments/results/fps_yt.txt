@@ -1,0 +1,3 @@
+Model, mean,  median
+OpenFace (CLNF):  0.0561,   0.0512
+CLM:   0.0683,   0.0602

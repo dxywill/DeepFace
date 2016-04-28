@@ -1,0 +1,12 @@
+AU1 results - corr 0.740, ccc - 0.729
+AU2 results - corr 0.702, ccc - 0.623
+AU4 results - corr 0.847, ccc - 0.823
+AU5 results - corr 0.669, ccc - 0.662
+AU6 results - corr 0.641, ccc - 0.627
+AU9 results - corr 0.722, ccc - 0.703
+AU12 results - corr 0.857, ccc - 0.847
+AU15 results - corr 0.652, ccc - 0.639
+AU17 results - corr 0.572, ccc - 0.506
+AU20 results - corr 0.507, ccc - 0.489
+AU25 results - corr 0.918, ccc - 0.916
+AU26 results - corr 0.552, ccc - 0.185
