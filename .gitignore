@@ -1,0 +1,11 @@
+exe/Recording/x64/
+exe/FaceLandmarkVidMulti/x64/
+lib/3rdParty/dlib/x64/
+lib/local/FaceAnalyser/x64/
+lib/local/LandmarkDetector/x64/
+exe/FaceLandmarkImg/x64/
+exe/FaceLandmarkVid/x64/
+exe/FeatureExtraction/x64/
+x64/Release/
+OpenFace.VC.opendb
+OpenFace.sdf
