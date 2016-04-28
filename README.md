@@ -6,33 +6,34 @@ The code was written mainly by Tadas Baltrusaitis during his time at the Languag
 
 Special thanks goes to Louis-Philippe Morency and his MultiComp Lab at Institute for Creative Technologies for help in writing and testing the code, and Erroll Wood for the gaze estimation work.
 
+## Functionality
+
+The system is capable of performing a number of facial analysis tasks:
+
+- Facial Landmark Detection
+
+![Sample facial landmark detection image](https://github.com/TadasBaltrusaitis/OpenFace/blob/master/imgs/multi_face_img.png)
+
+- Facial Landmark and head pose tracking (links to YouTube videos)
+
+<a href="https://www.youtube.com/watch?v=V7rV0uy7heQ" target="_blank"><img src="http://img.youtube.com/vi/V7rV0uy7heQ/0.jpg" alt="Multiple Face Tracking" width="240" height="180" border="10" /></a>
+<a href="https://www.youtube.com/watch?v=vYOa8Pif5lY" target="_blank"><img src="http://img.youtube.com/vi/vYOa8Pif5lY/0.jpg" alt="Multiple Face Tracking" width="240" height="180" border="10" /></a>
+
+- Facial Action Unit Recognition
+
+<img src="https://github.com/TadasBaltrusaitis/OpenFace/blob/master/imgs/au_sample.png" height="280" width="600" >
+
+- Gaze tracking (image of it in action)
+
+<img src="https://github.com/TadasBaltrusaitis/OpenFace/blob/master/imgs/gaze_ex.png" height="378" width="567" >
+
+- Facial Feature Extraction (aligned faces and HOG features)
+
+![Sample aligned face and HOG image](https://github.com/TadasBaltrusaitis/OpenFace/blob/master/imgs/appearance.png)
+
+For instructions of how to install/compile/use the project please see [wiki](https://github.com/TadasBaltrusaitis/OpenFace/wiki)
+
 More details about the project - http://www.cl.cam.ac.uk/research/rainbow/projects/openface/
-
-## Table of contents
-
-## Windows Instalation
-
-For Windows this software comes prepackaged with all the necessary binaries and dll's for compilation of the project, you still need to compile it in order to run it. You don't need to download anything additional, just open "OpenFace.sln" using Visual Studio 2015 and compile the code. The project was built and tested on Visual Studio 2015 (can't guarantee compatibility with other versions, and you would need to find/build the appropriate dll and lib files for them yourself). Code was tested on Windows 7/8/10 and Windows Server 2008 can't guarantee compatibility with other Windows versions (but in theory it should work). 
-
-NOTE be sure to run the project without debugger attached and in Release mode for speed (if running from Visual Studio). To run without debugger attach use CTRL + F5 instead of F5. To change from Debug mode to Release mode select Release from drop down menu in the toolbar. This can mean the difference between running at 5fps and 60fps on 320x240px videos. I also found that the x64 version seems to run faster on most machines.
-
-## Unix Instalation
-
-For Unix based systems and different compilers, I included Cmake files for cross-platform and cross-IDE support. For running the code on Ubuntu please see readme-ubuntu.txt for detailed instructions of how to get required libraries and build the project.
-
-## Copyright
-
-Copyright can be found in the Copyright.txt
-
-You have to respect boost, TBB, dlib, and OpenCV licenses.
-
-## Use
-
-Explanation of the code layout and the command line arguments can be found in Readme.txt
-
-## Windows Binaries
-
-Coming Soon
 
 ## Citation
 
@@ -62,3 +63,13 @@ in *IEEE International. Conference on Computer Vision (ICCV)*,  2015
 Tadas Baltrušaitis, Marwa Mahmoud, and Peter Robinson 
 in *Facial Expression Recognition and Analysis Challenge*, 
 *IEEE International Conference on Automatic Face and Gesture Recognition*, 2015 
+
+# Final remarks
+
+I did my best to make sure that the code runs out of the box but there are always issues and I would be grateful for your understanding that this is research code and not a commercial level product. However, if you encounter any problems/bugs/issues please contact me on github or by emailing me at Tadas.Baltrusaitis@cl.cam.ac.uk for any bug reports/questions/suggestions. 
+
+# Copyright
+
+Copyright can be found in the Copyright.txt
+
+You have to respect boost, TBB, dlib, and OpenCV licenses.
