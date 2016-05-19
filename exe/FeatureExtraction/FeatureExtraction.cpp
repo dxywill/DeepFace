@@ -152,231 +152,14 @@ void create_directory(string output_path)
 	}
 }
 
-void get_output_feature_params(vector<string> &output_similarity_aligned, vector<string> &output_hog_aligned_files, double &similarity_scale, 
-	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose, 
+void get_output_feature_params(vector<string> &output_similarity_aligned, vector<string> &output_hog_aligned_files, double &similarity_scale,
+	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose,
 	bool &output_2D_landmarks, bool &output_3D_landmarks, bool &output_model_params, bool &output_pose, bool &output_AUs, bool &output_gaze,
-	vector<string> &arguments)
-{
-	output_similarity_aligned.clear();
-	output_hog_aligned_files.clear();
+	vector<string> &arguments);
 
-	bool* valid = new bool[arguments.size()];
+void get_image_input_output_params_feats(vector<vector<string> > &input_image_files, bool& as_video, vector<string> &arguments);
 
-	for (size_t i = 0; i < arguments.size(); ++i)
-	{
-		valid[i] = true;
-	}
-
-	string input_root = "";
-	string output_root = "";
-
-	// First check if there is a root argument (so that videos and outputs could be defined more easilly)
-	for (size_t i = 0; i < arguments.size(); ++i)
-	{
-		if (arguments[i].compare("-root") == 0)
-		{
-			input_root = arguments[i + 1];
-			output_root = arguments[i + 1];
-			i++;
-		}
-		if (arguments[i].compare("-inroot") == 0)
-		{
-			input_root = arguments[i + 1];
-			i++;
-		}
-		if (arguments[i].compare("-outroot") == 0)
-		{
-			output_root = arguments[i + 1];
-			i++;
-		}
-	}
-
-	for (size_t i = 0; i < arguments.size(); ++i)
-	{
-		if (arguments[i].compare("-simalign") == 0)
-		{
-			output_similarity_aligned.push_back(output_root + arguments[i + 1]);
-			create_directory(output_root + arguments[i + 1]);
-			valid[i] = false;
-			valid[i + 1] = false;
-			i++;
-		}
-		else if (arguments[i].compare("-hogalign") == 0)
-		{
-			output_hog_aligned_files.push_back(output_root + arguments[i + 1]);
-			create_directory_from_file(output_root + arguments[i + 1]);
-			valid[i] = false;
-			valid[i + 1] = false;
-			i++;
-		}
-		else if (arguments[i].compare("-verbose") == 0)
-		{
-			verbose = true;
-		}
-		else if (arguments[i].compare("-rigid") == 0)
-		{
-			rigid = true;
-		}
-		else if (arguments[i].compare("-g") == 0)
-		{
-			grayscale = true;
-			valid[i] = false;
-		}
-		else if (arguments[i].compare("-simscale") == 0)
-		{
-			similarity_scale = stod(arguments[i + 1]);
-			valid[i] = false;
-			valid[i + 1] = false;
-			i++;
-		}
-		else if (arguments[i].compare("-simsize") == 0)
-		{
-			similarity_size = stoi(arguments[i + 1]);
-			valid[i] = false;
-			valid[i + 1] = false;
-			i++;
-		} 
-		else if (arguments[i].compare("-no2Dfp") == 0)
-		{
-			output_2D_landmarks = false;
-			valid[i] = false;
-		}
-		else if (arguments[i].compare("-no3Dfp") == 0)
-		{
-			output_3D_landmarks = false;
-			valid[i] = false;
-		}
-		else if (arguments[i].compare("-noMparams") == 0)
-		{
-			output_model_params = false;
-			valid[i] = false;
-		}
-		else if (arguments[i].compare("-noPose") == 0)
-		{
-			output_pose = false;
-			valid[i] = false;
-		}
-		else if (arguments[i].compare("-noAUs") == 0)
-		{
-			output_AUs = false;
-			valid[i] = false;
-		}
-		else if (arguments[i].compare("-noGaze") == 0)
-		{
-			output_gaze = false;
-			valid[i] = false;
-		}
-	}
-
-	for (int i = arguments.size() - 1; i >= 0; --i)
-	{
-		if (!valid[i])
-		{
-			arguments.erase(arguments.begin() + i);
-		}
-	}
-
-}
-// Can process images via directories creating a separate output file per directory
-void get_image_input_output_params_feats(vector<vector<string> > &input_image_files, bool& as_video, vector<string> &arguments)
-{
-	bool* valid = new bool[arguments.size()];
-		
-	for(size_t i = 0; i < arguments.size(); ++i)
-	{
-		valid[i] = true;
-		if (arguments[i].compare("-fdir") == 0) 
-		{                    
-
-			// parse the -fdir directory by reading in all of the .png and .jpg files in it
-			path image_directory (arguments[i+1]); 
-
-			try
-			{
-				 // does the file exist and is it a directory
-				if (exists(image_directory) && is_directory(image_directory))   
-				{
-					
-					vector<path> file_in_directory;                                
-					copy(directory_iterator(image_directory), directory_iterator(), back_inserter(file_in_directory));
-
-					// Sort the images in the directory first
-					sort(file_in_directory.begin(), file_in_directory.end()); 
-
-					vector<string> curr_dir_files;
-
-					for (vector<path>::const_iterator file_iterator (file_in_directory.begin()); file_iterator != file_in_directory.end(); ++file_iterator)
-					{
-						// Possible image extension .jpg and .png
-						if(file_iterator->extension().string().compare(".jpg") == 0 || file_iterator->extension().string().compare(".png") == 0)
-						{																
-							curr_dir_files.push_back(file_iterator->string());															
-						}
-					}
-
-					input_image_files.push_back(curr_dir_files);
-				}
-			}
-			catch (const filesystem_error& ex)
-			{
-				cout << ex.what() << '\n';
-			}
-
-			valid[i] = false;
-			valid[i+1] = false;		
-			i++;
-		}
-		else if (arguments[i].compare("-asvid") == 0) 
-		{
-			as_video = true;
-		}
-	}
-	
-	// Clear up the argument list
-	for(int i=arguments.size()-1; i >= 0; --i)
-	{
-		if(!valid[i])
-		{
-			arguments.erase(arguments.begin()+i);
-		}
-	}
-
-}
-
-void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<double>& hog_descriptor, int num_rows, int num_cols)
-{
-
-	// Using FHOGs, hence 31 channels
-	int num_channels = 31;
-
-	hog_file->write((char*)(&num_cols), 4);
-	hog_file->write((char*)(&num_rows), 4);
-	hog_file->write((char*)(&num_channels), 4);
-
-	// Not the best way to store a bool, but will be much easier to read it
-	float good_frame_float;
-	if(good_frame)
-		good_frame_float = 1;
-	else
-		good_frame_float = -1;
-
-	hog_file->write((char*)(&good_frame_float), 4);
-
-	cv::MatConstIterator_<double> descriptor_it = hog_descriptor.begin();
-
-	for(int y = 0; y < num_cols; ++y)
-	{
-		for(int x = 0; x < num_rows; ++x)
-		{
-			for(unsigned int o = 0; o < 31; ++o)
-			{
-
-				float hog_data = (float)(*descriptor_it++);
-				hog_file->write ((char*)&hog_data, 4);
-			}
-		}
-	}
-}
+void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<double>& hog_descriptor, int num_rows, int num_cols);
 
 // Some globals for tracking timing information for visualisation
 double fps_tracker = -1.0;
@@ -443,193 +226,14 @@ void visualise_tracking(cv::Mat& captured_image, const LandmarkDetector::CLNF& f
 
 void prepareOutputFile(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
-	int num_landmarks, int num_model_modes, vector<string> au_names_class, vector<string> au_names_reg)
-{
-
-	*output_file << "frame, timestamp, confidence, success";
-
-	if (output_gaze)
-	{
-		*output_file << ", gaze_0_x, gaze_0_y, gaze_0_z, gaze_1_x, gaze_1_y, gaze_2_z";
-	}
-
-	if (output_pose)
-	{
-		*output_file << ", pose_Tx, pose_Ty, pose_Tz, pose_Rx, pose_Ry, pose_Rz";
-	}
-
-	if (output_2D_landmarks)
-	{
-		for (int i = 0; i < num_landmarks; ++i)
-		{
-			*output_file << ", x_" << i;
-		}
-		for (int i = 0; i < num_landmarks; ++i)
-		{
-			*output_file << ", y_" << i;
-		}
-	}
-
-	if (output_3D_landmarks)
-	{
-		for (int i = 0; i < num_landmarks; ++i)
-		{
-			*output_file << ", X_" << i;
-		}
-		for (int i = 0; i < num_landmarks; ++i)
-		{
-			*output_file << ", Y_" << i;
-		}
-		for (int i = 0; i < num_landmarks; ++i)
-		{
-			*output_file << ", Z_" << i;
-		}
-	}
-
-	// Outputting model parameters (rigid and non-rigid), the first parameters are the 6 rigid shape parameters, they are followed by the non rigid shape parameters
-	if (output_model_params)
-	{
-		*output_file << ", p_scale, p_rx, p_ry, p_rz, p_tx, p_ty";
-		for (int i = 0; i < num_model_modes; ++i)
-		{
-			*output_file << ", p_" << i;
-		}
-	}
-
-	if (output_AUs)
-	{
-		std::sort(au_names_reg.begin(), au_names_reg.end());
-		for (string reg_name : au_names_reg)
-		{
-			*output_file << ", " << reg_name << "_r";
-		}
-
-		std::sort(au_names_class.begin(), au_names_class.end());
-		for (string class_name : au_names_class)
-		{
-			*output_file << ", " << class_name << "_c";
-		}
-	}
-
-	*output_file << endl;
-
-}
+	int num_landmarks, int num_model_modes, vector<string> au_names_class, vector<string> au_names_reg);
 
 // Output all of the information into one file in one go (quite a few parameters, but simplifies the flow)
 void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
 	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
 	const LandmarkDetector::CLNF& face_model, int frame_count, double time_stamp, bool detection_success,
 	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, double fx, double fy, double cx, double cy,
-	const FaceAnalysis::FaceAnalyser& face_analyser)
-{
-
-	double confidence = 0.5 * (1 - face_model.detection_certainty);
-
-	*output_file << frame_count + 1 << ", " << time_stamp << ", " << confidence << ", " << detection_success;
-
-	// Output the estimated gaze
-	if (output_gaze)
-	{
-		*output_file << ", " << gazeDirection0.x << ", " << gazeDirection0.y << ", " << gazeDirection0.z
-			<< ", " << gazeDirection1.x << ", " << gazeDirection1.y << ", " << gazeDirection1.z;
-	}
-
-	// Output the estimated head pose
-	if (output_pose)
-	{
-		*output_file << ", " << pose_estimate[0] << ", " << pose_estimate[1] << ", " << pose_estimate[2]
-			<< ", " << pose_estimate[3] << ", " << pose_estimate[4] << ", " << pose_estimate[5];
-	}
-
-	// Output the detected 2D facial landmarks
-	if (output_2D_landmarks)
-	{
-		for (int i = 0; i < face_model.pdm.NumberOfPoints() * 2; ++i)
-		{
-			*output_file << ", " << face_model.detected_landmarks.at<double>(i);
-		}
-	}
-
-	// Output the detected 3D facial landmarks
-	if (output_3D_landmarks)
-	{
-		cv::Mat_<double> shape_3D = face_model.GetShape(fx, fy, cx, cy);
-		for (int i = 0; i < face_model.pdm.NumberOfPoints() * 3; ++i)
-		{
-			*output_file << ", " << shape_3D.at<double>(i);
-		}
-	}
-
-	if (output_model_params)
-	{
-		for (int i = 0; i < 6; ++i)
-		{
-			*output_file << ", " << face_model.params_global[i];
-		}
-		for (int i = 0; i < face_model.pdm.NumberOfModes(); ++i)
-		{
-			*output_file << ", " << face_model.params_local.at<double>(i, 0);
-		}
-	}
-
-
-
-	if (output_AUs)
-	{
-		auto aus_reg = face_analyser.GetCurrentAUsReg();
-
-		vector<string> au_reg_names = face_analyser.GetAURegNames();
-		std::sort(au_reg_names.begin(), au_reg_names.end());
-
-		// write out ar the correct index
-		for (string au_name : au_reg_names)
-		{
-			for (auto au_reg : aus_reg)
-			{
-				if (au_name.compare(au_reg.first) == 0)
-				{
-					*output_file << ", " << au_reg.second;
-					break;
-				}
-			}
-		}
-
-		if (aus_reg.size() == 0)
-		{
-			for (size_t p = 0; p < face_analyser.GetAURegNames().size(); ++p)
-			{
-				*output_file << ", 0";
-			}
-		}
-
-		auto aus_class = face_analyser.GetCurrentAUsClass();
-
-		vector<string> au_class_names = face_analyser.GetAUClassNames();
-		std::sort(au_class_names.begin(), au_class_names.end());
-
-		// write out ar the correct index
-		for (string au_name : au_class_names)
-		{
-			for (auto au_class: aus_class)
-			{
-				if (au_name.compare(au_class.first) == 0)
-				{
-					*output_file << ", " << au_class.second;
-					break;
-				}
-			}
-		}
-
-		if (aus_class.size() == 0)
-		{
-			for (size_t p = 0; p < face_analyser.GetAUClassNames().size(); ++p)
-			{
-				*output_file << ", 0";
-			}
-		}
-	}
-	*output_file << endl;
-}
+	const FaceAnalysis::FaceAnalyser& face_analyser);
 
 void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file);
 
@@ -1224,4 +828,422 @@ void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string 
 	}
 		
 
+}
+
+void prepareOutputFile(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
+	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
+	int num_landmarks, int num_model_modes, vector<string> au_names_class, vector<string> au_names_reg)
+{
+
+	*output_file << "frame, timestamp, confidence, success";
+
+	if (output_gaze)
+	{
+		*output_file << ", gaze_0_x, gaze_0_y, gaze_0_z, gaze_1_x, gaze_1_y, gaze_2_z";
+	}
+
+	if (output_pose)
+	{
+		*output_file << ", pose_Tx, pose_Ty, pose_Tz, pose_Rx, pose_Ry, pose_Rz";
+	}
+
+	if (output_2D_landmarks)
+	{
+		for (int i = 0; i < num_landmarks; ++i)
+		{
+			*output_file << ", x_" << i;
+		}
+		for (int i = 0; i < num_landmarks; ++i)
+		{
+			*output_file << ", y_" << i;
+		}
+	}
+
+	if (output_3D_landmarks)
+	{
+		for (int i = 0; i < num_landmarks; ++i)
+		{
+			*output_file << ", X_" << i;
+		}
+		for (int i = 0; i < num_landmarks; ++i)
+		{
+			*output_file << ", Y_" << i;
+		}
+		for (int i = 0; i < num_landmarks; ++i)
+		{
+			*output_file << ", Z_" << i;
+		}
+	}
+
+	// Outputting model parameters (rigid and non-rigid), the first parameters are the 6 rigid shape parameters, they are followed by the non rigid shape parameters
+	if (output_model_params)
+	{
+		*output_file << ", p_scale, p_rx, p_ry, p_rz, p_tx, p_ty";
+		for (int i = 0; i < num_model_modes; ++i)
+		{
+			*output_file << ", p_" << i;
+		}
+	}
+
+	if (output_AUs)
+	{
+		std::sort(au_names_reg.begin(), au_names_reg.end());
+		for (string reg_name : au_names_reg)
+		{
+			*output_file << ", " << reg_name << "_r";
+		}
+
+		std::sort(au_names_class.begin(), au_names_class.end());
+		for (string class_name : au_names_class)
+		{
+			*output_file << ", " << class_name << "_c";
+		}
+	}
+
+	*output_file << endl;
+
+}
+
+// Output all of the information into one file in one go (quite a few parameters, but simplifies the flow)
+void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, bool output_3D_landmarks,
+	bool output_model_params, bool output_pose, bool output_AUs, bool output_gaze,
+	const LandmarkDetector::CLNF& face_model, int frame_count, double time_stamp, bool detection_success,
+	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, double fx, double fy, double cx, double cy,
+	const FaceAnalysis::FaceAnalyser& face_analyser)
+{
+
+	double confidence = 0.5 * (1 - face_model.detection_certainty);
+
+	*output_file << frame_count + 1 << ", " << time_stamp << ", " << confidence << ", " << detection_success;
+
+	// Output the estimated gaze
+	if (output_gaze)
+	{
+		*output_file << ", " << gazeDirection0.x << ", " << gazeDirection0.y << ", " << gazeDirection0.z
+			<< ", " << gazeDirection1.x << ", " << gazeDirection1.y << ", " << gazeDirection1.z;
+	}
+
+	// Output the estimated head pose
+	if (output_pose)
+	{
+		*output_file << ", " << pose_estimate[0] << ", " << pose_estimate[1] << ", " << pose_estimate[2]
+			<< ", " << pose_estimate[3] << ", " << pose_estimate[4] << ", " << pose_estimate[5];
+	}
+
+	// Output the detected 2D facial landmarks
+	if (output_2D_landmarks)
+	{
+		for (int i = 0; i < face_model.pdm.NumberOfPoints() * 2; ++i)
+		{
+			*output_file << ", " << face_model.detected_landmarks.at<double>(i);
+		}
+	}
+
+	// Output the detected 3D facial landmarks
+	if (output_3D_landmarks)
+	{
+		cv::Mat_<double> shape_3D = face_model.GetShape(fx, fy, cx, cy);
+		for (int i = 0; i < face_model.pdm.NumberOfPoints() * 3; ++i)
+		{
+			*output_file << ", " << shape_3D.at<double>(i);
+		}
+	}
+
+	if (output_model_params)
+	{
+		for (int i = 0; i < 6; ++i)
+		{
+			*output_file << ", " << face_model.params_global[i];
+		}
+		for (int i = 0; i < face_model.pdm.NumberOfModes(); ++i)
+		{
+			*output_file << ", " << face_model.params_local.at<double>(i, 0);
+		}
+	}
+
+
+
+	if (output_AUs)
+	{
+		auto aus_reg = face_analyser.GetCurrentAUsReg();
+
+		vector<string> au_reg_names = face_analyser.GetAURegNames();
+		std::sort(au_reg_names.begin(), au_reg_names.end());
+
+		// write out ar the correct index
+		for (string au_name : au_reg_names)
+		{
+			for (auto au_reg : aus_reg)
+			{
+				if (au_name.compare(au_reg.first) == 0)
+				{
+					*output_file << ", " << au_reg.second;
+					break;
+				}
+			}
+		}
+
+		if (aus_reg.size() == 0)
+		{
+			for (size_t p = 0; p < face_analyser.GetAURegNames().size(); ++p)
+			{
+				*output_file << ", 0";
+			}
+		}
+
+		auto aus_class = face_analyser.GetCurrentAUsClass();
+
+		vector<string> au_class_names = face_analyser.GetAUClassNames();
+		std::sort(au_class_names.begin(), au_class_names.end());
+
+		// write out ar the correct index
+		for (string au_name : au_class_names)
+		{
+			for (auto au_class : aus_class)
+			{
+				if (au_name.compare(au_class.first) == 0)
+				{
+					*output_file << ", " << au_class.second;
+					break;
+				}
+			}
+		}
+
+		if (aus_class.size() == 0)
+		{
+			for (size_t p = 0; p < face_analyser.GetAUClassNames().size(); ++p)
+			{
+				*output_file << ", 0";
+			}
+		}
+	}
+	*output_file << endl;
+}
+
+
+void get_output_feature_params(vector<string> &output_similarity_aligned, vector<string> &output_hog_aligned_files, double &similarity_scale,
+	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose,
+	bool &output_2D_landmarks, bool &output_3D_landmarks, bool &output_model_params, bool &output_pose, bool &output_AUs, bool &output_gaze,
+	vector<string> &arguments)
+{
+	output_similarity_aligned.clear();
+	output_hog_aligned_files.clear();
+
+	bool* valid = new bool[arguments.size()];
+
+	for (size_t i = 0; i < arguments.size(); ++i)
+	{
+		valid[i] = true;
+	}
+
+	string input_root = "";
+	string output_root = "";
+
+	// First check if there is a root argument (so that videos and outputs could be defined more easilly)
+	for (size_t i = 0; i < arguments.size(); ++i)
+	{
+		if (arguments[i].compare("-root") == 0)
+		{
+			input_root = arguments[i + 1];
+			output_root = arguments[i + 1];
+			i++;
+		}
+		if (arguments[i].compare("-inroot") == 0)
+		{
+			input_root = arguments[i + 1];
+			i++;
+		}
+		if (arguments[i].compare("-outroot") == 0)
+		{
+			output_root = arguments[i + 1];
+			i++;
+		}
+	}
+
+	for (size_t i = 0; i < arguments.size(); ++i)
+	{
+		if (arguments[i].compare("-simalign") == 0)
+		{
+			output_similarity_aligned.push_back(output_root + arguments[i + 1]);
+			create_directory(output_root + arguments[i + 1]);
+			valid[i] = false;
+			valid[i + 1] = false;
+			i++;
+		}
+		else if (arguments[i].compare("-hogalign") == 0)
+		{
+			output_hog_aligned_files.push_back(output_root + arguments[i + 1]);
+			create_directory_from_file(output_root + arguments[i + 1]);
+			valid[i] = false;
+			valid[i + 1] = false;
+			i++;
+		}
+		else if (arguments[i].compare("-verbose") == 0)
+		{
+			verbose = true;
+		}
+		else if (arguments[i].compare("-rigid") == 0)
+		{
+			rigid = true;
+		}
+		else if (arguments[i].compare("-g") == 0)
+		{
+			grayscale = true;
+			valid[i] = false;
+		}
+		else if (arguments[i].compare("-simscale") == 0)
+		{
+			similarity_scale = stod(arguments[i + 1]);
+			valid[i] = false;
+			valid[i + 1] = false;
+			i++;
+		}
+		else if (arguments[i].compare("-simsize") == 0)
+		{
+			similarity_size = stoi(arguments[i + 1]);
+			valid[i] = false;
+			valid[i + 1] = false;
+			i++;
+		}
+		else if (arguments[i].compare("-no2Dfp") == 0)
+		{
+			output_2D_landmarks = false;
+			valid[i] = false;
+		}
+		else if (arguments[i].compare("-no3Dfp") == 0)
+		{
+			output_3D_landmarks = false;
+			valid[i] = false;
+		}
+		else if (arguments[i].compare("-noMparams") == 0)
+		{
+			output_model_params = false;
+			valid[i] = false;
+		}
+		else if (arguments[i].compare("-noPose") == 0)
+		{
+			output_pose = false;
+			valid[i] = false;
+		}
+		else if (arguments[i].compare("-noAUs") == 0)
+		{
+			output_AUs = false;
+			valid[i] = false;
+		}
+		else if (arguments[i].compare("-noGaze") == 0)
+		{
+			output_gaze = false;
+			valid[i] = false;
+		}
+	}
+
+	for (int i = arguments.size() - 1; i >= 0; --i)
+	{
+		if (!valid[i])
+		{
+			arguments.erase(arguments.begin() + i);
+		}
+	}
+
+}
+
+// Can process images via directories creating a separate output file per directory
+void get_image_input_output_params_feats(vector<vector<string> > &input_image_files, bool& as_video, vector<string> &arguments)
+{
+	bool* valid = new bool[arguments.size()];
+
+	for (size_t i = 0; i < arguments.size(); ++i)
+	{
+		valid[i] = true;
+		if (arguments[i].compare("-fdir") == 0)
+		{
+
+			// parse the -fdir directory by reading in all of the .png and .jpg files in it
+			path image_directory(arguments[i + 1]);
+
+			try
+			{
+				// does the file exist and is it a directory
+				if (exists(image_directory) && is_directory(image_directory))
+				{
+
+					vector<path> file_in_directory;
+					copy(directory_iterator(image_directory), directory_iterator(), back_inserter(file_in_directory));
+
+					// Sort the images in the directory first
+					sort(file_in_directory.begin(), file_in_directory.end());
+
+					vector<string> curr_dir_files;
+
+					for (vector<path>::const_iterator file_iterator(file_in_directory.begin()); file_iterator != file_in_directory.end(); ++file_iterator)
+					{
+						// Possible image extension .jpg and .png
+						if (file_iterator->extension().string().compare(".jpg") == 0 || file_iterator->extension().string().compare(".png") == 0)
+						{
+							curr_dir_files.push_back(file_iterator->string());
+						}
+					}
+
+					input_image_files.push_back(curr_dir_files);
+				}
+			}
+			catch (const filesystem_error& ex)
+			{
+				cout << ex.what() << '\n';
+			}
+
+			valid[i] = false;
+			valid[i + 1] = false;
+			i++;
+		}
+		else if (arguments[i].compare("-asvid") == 0)
+		{
+			as_video = true;
+		}
+	}
+
+	// Clear up the argument list
+	for (int i = arguments.size() - 1; i >= 0; --i)
+	{
+		if (!valid[i])
+		{
+			arguments.erase(arguments.begin() + i);
+		}
+	}
+
+}
+
+void output_HOG_frame(std::ofstream* hog_file, bool good_frame, const cv::Mat_<double>& hog_descriptor, int num_rows, int num_cols)
+{
+
+	// Using FHOGs, hence 31 channels
+	int num_channels = 31;
+
+	hog_file->write((char*)(&num_cols), 4);
+	hog_file->write((char*)(&num_rows), 4);
+	hog_file->write((char*)(&num_channels), 4);
+
+	// Not the best way to store a bool, but will be much easier to read it
+	float good_frame_float;
+	if (good_frame)
+		good_frame_float = 1;
+	else
+		good_frame_float = -1;
+
+	hog_file->write((char*)(&good_frame_float), 4);
+
+	cv::MatConstIterator_<double> descriptor_it = hog_descriptor.begin();
+
+	for (int y = 0; y < num_cols; ++y)
+	{
+		for (int x = 0; x < num_rows; ++x)
+		{
+			for (unsigned int o = 0; o < 31; ++o)
+			{
+
+				float hog_data = (float)(*descriptor_it++);
+				hog_file->write((char*)&hog_data, 4);
+			}
+		}
+	}
 }
