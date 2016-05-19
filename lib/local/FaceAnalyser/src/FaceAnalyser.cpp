@@ -383,7 +383,7 @@ void FaceAnalyser::AddNextFrame(const cv::Mat& frame, const LandmarkDetector::CL
 		}
 		else
 		{
-			AU_predictions_reg_all_hist[AU_predictions_reg[au].first].push_back(-100.0);
+			AU_predictions_reg_all_hist[AU_predictions_reg[au].first].push_back(0);
 		}
 	}
 	
@@ -400,7 +400,7 @@ void FaceAnalyser::AddNextFrame(const cv::Mat& frame, const LandmarkDetector::CL
 		}
 		else
 		{
-			AU_predictions_class_all_hist[AU_predictions_class[au].first].push_back(-100.0);
+			AU_predictions_class_all_hist[AU_predictions_class[au].first].push_back(0);
 		}
 	}
 	
@@ -459,7 +459,7 @@ void FaceAnalyser::PredictAUs(const cv::Mat_<double>& hog_features, const cv::Ma
 		}
 		else
 		{
-			AU_predictions_reg_all_hist[AU_predictions_reg[au].first].push_back(-100.0);
+			AU_predictions_reg_all_hist[AU_predictions_reg[au].first].push_back(0.0);
 		}
 	}
 
@@ -476,7 +476,7 @@ void FaceAnalyser::PredictAUs(const cv::Mat_<double>& hog_features, const cv::Ma
 		}
 		else
 		{
-			AU_predictions_class_all_hist[AU_predictions_class[au].first].push_back(-100.0);
+			AU_predictions_class_all_hist[AU_predictions_class[au].first].push_back(0.0);
 		}
 	}
 
