@@ -212,7 +212,7 @@ private:
 	void UpdatePredictionTrack(cv::Mat_<unsigned int>& prediction_corr_histogram, int& prediction_correction_count, vector<double>& correction, const vector<pair<string, double>>& predictions, double ratio=0.25, int num_bins = 200, double min_val = -3, double max_val = 5, int min_frames = 10);
 	void GetSampleHist(cv::Mat_<unsigned int>& prediction_corr_histogram, int prediction_correction_count, vector<double>& sample, double ratio, int num_bins = 200, double min_val = 0, double max_val = 5);
 
-	vector<std::pair<std::string, vector<double>>> PostprocessPredictions();
+	void PostprocessPredictions();
 
 	vector<cv::Mat_<unsigned int>> au_prediction_correction_histogram;
 	vector<int> au_prediction_correction_count;
@@ -233,6 +233,15 @@ private:
 	double align_scale;	
 	int align_width;
 	int align_height;
+
+	// Useful placeholder for renormalizing the initial frames of shorter videos
+	int max_init_frames = 3000;
+	vector<cv::Mat_<double>> hog_desc_frames_init;
+	vector<cv::Mat_<double>> geom_descriptor_frames_init;
+	vector<int> views;
+	bool postprocessed = false;
+	int frames_tracking_succ = 0;
+
 };
   //===========================================================================
 }

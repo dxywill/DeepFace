@@ -20,3 +20,9 @@ matlab_runners/Feature Point Experiments/yt_features/
 matlab_runners/Feature Point Experiments/yt_features_clm/
 matlab_runners/Gaze Experiments/mpii_out/
 build/
+Release/
+matlab_runners/Action Unit Experiments/out_bp4d/
+matlab_runners/Action Unit Experiments/out_SEMAINE/
+*.ipch
+exe/FeatureExtraction/out_bp4d/
+x64/Debug/

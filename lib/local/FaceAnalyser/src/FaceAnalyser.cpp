@@ -321,6 +321,9 @@ void FaceAnalyser::AddNextFrame(const cv::Mat& frame, const LandmarkDetector::CL
 
 	update_median = update_median & clnf_model.detection_success;
 
+	if (clnf_model.detection_success)
+		frames_tracking_succ++;
+
 	// A small speedup
 	if(frames_tracking % 2 == 1)
 	{
@@ -368,16 +371,13 @@ void FaceAnalyser::AddNextFrame(const cv::Mat& frame, const LandmarkDetector::CL
 		AU_predictions_reg_corrected = CorrectOnlineAUs(AU_predictions_reg, orientation_to_use, true, false, clnf_model.detection_success);
 	}
 
-	// Keep only closer to in-plane faces
-	double angle_norm = cv::sqrt(clnf_model.params_global[2] * clnf_model.params_global[2] + clnf_model.params_global[3] * clnf_model.params_global[3]);
-
 	// Add the reg predictions to the historic data
 	for (size_t au = 0; au < AU_predictions_reg.size(); ++au)
 	{
 
 		// Find the appropriate AU (if not found add it)		
-		// Only add if the detection was successful and not too out of plane
-		if(clnf_model.detection_success && angle_norm < 0.4)
+		// Only add if the detection was successful
+		if(clnf_model.detection_success)
 		{
 			AU_predictions_reg_all_hist[AU_predictions_reg[au].first].push_back(AU_predictions_reg[au].second);
 		}
@@ -393,8 +393,8 @@ void FaceAnalyser::AddNextFrame(const cv::Mat& frame, const LandmarkDetector::CL
 	{
 
 		// Find the appropriate AU (if not found add it)		
-		// Only add if the detection was successful and not too out of plane
-		if(clnf_model.detection_success && angle_norm < 0.4)
+		// Only add if the detection was successful
+		if(clnf_model.detection_success)
 		{
 			AU_predictions_class_all_hist[AU_predictions_class[au].first].push_back(AU_predictions_class[au].second);
 		}
@@ -409,16 +409,28 @@ void FaceAnalyser::AddNextFrame(const cv::Mat& frame, const LandmarkDetector::CL
 	{
 		AU_predictions_reg = AU_predictions_reg_corrected;
 	}
+	else
+	{
+		if (clnf_model.detection_success && frames_tracking_succ - 1 < max_init_frames)
+		{
+			hog_desc_frames_init.push_back(hog_descriptor);
+			geom_descriptor_frames_init.push_back(geom_descriptor_frame);
+			views.push_back(orientation_to_use);
+		}
+	}
 
 	this->current_time_seconds = timestamp_seconds;
 
 	view_used = orientation_to_use;
 			
-	bool success = clnf_model.detection_success && angle_norm < 0.4;
+	bool success = clnf_model.detection_success;
 
 	confidences.push_back(clnf_model.detection_certainty);
 	valid_preds.push_back(success);
 	timestamps.push_back(timestamp_seconds);
+
+
+
 }
 
 void FaceAnalyser::GetGeomDescriptor(cv::Mat_<double>& geom_desc)
@@ -444,16 +456,13 @@ void FaceAnalyser::PredictAUs(const cv::Mat_<double>& hog_features, const cv::Ma
 		AU_predictions_reg_corrected = CorrectOnlineAUs(AU_predictions_reg, orientation_to_use, true, false, clnf_model.detection_success);
 	}
 
-	// Keep only closer to in-plane faces
-	double angle_norm = cv::sqrt(clnf_model.params_global[2] * clnf_model.params_global[2] + clnf_model.params_global[3] * clnf_model.params_global[3]);
-
 	// Add the reg predictions to the historic data
 	for (size_t au = 0; au < AU_predictions_reg.size(); ++au)
 	{
 
 		// Find the appropriate AU (if not found add it)		
-		// Only add if the detection was successful and not too out of plane
-		if(clnf_model.detection_success && angle_norm < 0.4)
+		// Only add if the detection was successful
+		if(clnf_model.detection_success)
 		{
 			AU_predictions_reg_all_hist[AU_predictions_reg[au].first].push_back(AU_predictions_reg[au].second);
 		}
@@ -469,8 +478,8 @@ void FaceAnalyser::PredictAUs(const cv::Mat_<double>& hog_features, const cv::Ma
 	{
 
 		// Find the appropriate AU (if not found add it)		
-		// Only add if the detection was successful and not too out of plane
-		if(clnf_model.detection_success && angle_norm < 0.4)
+		// Only add if the detection was successful
+		if(clnf_model.detection_success)
 		{
 			AU_predictions_class_all_hist[AU_predictions_class[au].first].push_back(AU_predictions_class[au].second);
 		}
@@ -496,14 +505,62 @@ void FaceAnalyser::PredictAUs(const cv::Mat_<double>& hog_features, const cv::Ma
 
 	view_used = orientation_to_use;
 
-	bool success = clnf_model.detection_success && angle_norm < 0.4;
+	bool success = clnf_model.detection_success;
 
 	confidences.push_back(clnf_model.detection_certainty);
 	valid_preds.push_back(success);
 }
 
+// Perform prediction on initial n frames anew as the current neutral face estimate is better now
+void FaceAnalyser::PostprocessPredictions()
+{
+	if(!postprocessed)
+	{
+		int success_ind = 0;
+		int all_ind = 0;
+		int all_frames_size = timestamps.size();
+
+		while(all_ind < all_frames_size && success_ind < max_init_frames)
+		{
+		
+			if(valid_preds[all_ind])
+			{
+
+				this->hog_desc_frame = hog_desc_frames_init[success_ind];
+				this->geom_descriptor_frame = geom_descriptor_frames_init[success_ind];
+
+				// Perform AU prediction	
+				auto AU_predictions_reg = PredictCurrentAUs(views[success_ind]);
+
+				// Modify the predictions to the historic data
+				for (size_t au = 0; au < AU_predictions_reg.size(); ++au)
+				{
+					// Find the appropriate AU (if not found add it)		
+					AU_predictions_reg_all_hist[AU_predictions_reg[au].first][all_ind] = AU_predictions_reg[au].second;
+				}
+
+				auto AU_predictions_class = PredictCurrentAUsClass(views[success_ind]);
+
+				for (size_t au = 0; au < AU_predictions_class.size(); ++au)
+				{
+					// Find the appropriate AU (if not found add it)		
+					AU_predictions_class_all_hist[AU_predictions_class[au].first][all_ind] = AU_predictions_class[au].second;
+				}
+		
+				success_ind++;
+			}
+			all_ind++;
+
+		}
+		postprocessed = true;
+	}
+}
+
 void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps)
 {
+	
+	PostprocessPredictions();
+
 	timestamps = this->timestamps;
 	au_predictions.clear();
 	// First extract the valid AU values and put them in a different format
@@ -573,6 +630,8 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 
 void FaceAnalyser::ExtractAllPredictionsOfflineClass(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps)
 {
+	PostprocessPredictions();
+
 	timestamps = this->timestamps;
 	au_predictions.clear();
 
@@ -631,6 +690,11 @@ void FaceAnalyser::Reset()
 	confidences.clear();
 	valid_preds.clear();
 
+	// Clean up the postprocessing data as well
+	hog_desc_frames_init.clear();
+	geom_descriptor_frames_init.clear();
+	postprocessed = false;
+	frames_tracking_succ = 0;
 }
 
 void FaceAnalyser::UpdateRunningMedian(cv::Mat_<unsigned int>& histogram, int& hist_count, cv::Mat_<double>& median, const cv::Mat_<double>& descriptor, bool update, int num_bins, double min_val, double max_val)

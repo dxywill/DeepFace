@@ -1,6 +1,6 @@
 clear
 DISFA_dir = 'D:/Datasets/DISFA/Videos_LeftCamera/';
-clm_exe = '"../../x64/Release/FeatureExtraction.exe"';
+executable = '"../../x64/Release/FeatureExtraction.exe"';
 
 videos = dir([DISFA_dir, '*.avi']);
 
@@ -20,7 +20,7 @@ parfor v = 1:numel(videos)
     
     % where to output tracking results
     output_file = [output name '_au.txt'];
-    command = [clm_exe ' -f "' vid_file '" -of "' output_file '" -q -no2Dfp -no3Dfp -noMparams -noPose -noGaze'];
+    command = [executable ' -f "' vid_file '" -of "' output_file '" -q -no2Dfp -no3Dfp -noMparams -noPose -noGaze'];
         
     dos(command);
     

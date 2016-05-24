@@ -686,10 +686,12 @@ int main (int argc, char **argv)
 
 		if(output_files.size() > 0)
 		{
-		
+			
 			// If the video is long enough post-process it for AUs
 			if (output_AUs && frame_count > 100)
 			{
+				cout << "Postprocessing the Action Unit predictions" << endl;
+
 				post_process_output_file(face_analyser, output_files[f_n]);
 			}
 		}
@@ -706,7 +708,7 @@ int main (int argc, char **argv)
 		}
 
 		// break out of the loop if done with all the files (or using a webcam)
-		if(f_n == input_files.size() -1 || input_files.empty())
+		if((video_input && f_n == input_files.size() -1) || (!video_input && f_n == input_image_files.size() - 1))
 		{
 			done = true;
 		}
