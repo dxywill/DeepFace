@@ -168,6 +168,42 @@ std::vector<std::string> FaceAnalyser::GetAURegNames() const
 	return au_reg_names_all;
 }
 
+std::vector<bool> FaceAnalyser::GetDynamicAUClass() const
+{
+	std::vector<bool> au_dynamic_class;
+	std::vector<std::string> au_class_names_stat = AU_SVM_static_appearance_lin.GetAUNames();
+	std::vector<std::string> au_class_names_dyn = AU_SVM_dynamic_appearance_lin.GetAUNames();
+
+	for (size_t i = 0; i < au_class_names_stat.size(); ++i)
+	{
+		au_dynamic_class.push_back(false);
+	}
+	for (size_t i = 0; i < au_class_names_dyn.size(); ++i)
+	{
+		au_dynamic_class.push_back(true);
+	}
+
+	return au_dynamic_class;
+}
+
+std::vector<bool> FaceAnalyser::GetDynamicAUReg() const
+{
+	std::vector<bool> au_dynamic_reg;
+	std::vector<std::string> au_reg_names_stat = AU_SVR_static_appearance_lin_regressors.GetAUNames();
+	std::vector<std::string> au_reg_names_dyn = AU_SVR_dynamic_appearance_lin_regressors.GetAUNames();
+
+	for (size_t i = 0; i < au_reg_names_stat.size(); ++i)
+	{
+		au_dynamic_reg.push_back(false);
+	}
+	for (size_t i = 0; i < au_reg_names_dyn.size(); ++i)
+	{
+		au_dynamic_reg.push_back(true);
+	}
+
+	return au_dynamic_reg;
+}
+
 cv::Mat_<int> FaceAnalyser::GetTriangulation()
 {
 	return triangulation.clone();
@@ -569,6 +605,7 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 	confidences = this->confidences;
 	successes = this->valid_preds;
 
+	// TODO only if the video is long enough or there is enough range? Compare stdev of BP4D and this
 	for(auto au_iter = AU_predictions_reg_all_hist.begin(); au_iter != AU_predictions_reg_all_hist.end(); ++au_iter)
 	{
 		vector<double> au_good;
@@ -599,9 +636,10 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 		aus_valid.push_back(au_good);
 	}
 
-	// sort each of the aus
+	// sort each of the aus and adjust the dynamic ones
 	for(size_t au = 0; au < au_predictions.size(); ++au)
 	{
+
 		for(size_t frame = 0; frame < au_predictions[au].second.size(); ++frame)
 		{
 

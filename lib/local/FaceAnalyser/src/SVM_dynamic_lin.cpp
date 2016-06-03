@@ -75,7 +75,7 @@ void SVM_dynamic_lin::Read(std::ifstream& stream, const std::vector<std::string>
 		LandmarkDetector::ReadMatBin(stream, m_tmp);
 		if(cv::norm(m_tmp - this->means > 0.00001))
 		{
-			cout << "Something went wrong with the SVR dynamic regressors" << endl;
+			cout << "Something went wrong with the SVM dynamic classifiers" << endl;
 		}
 	}
 

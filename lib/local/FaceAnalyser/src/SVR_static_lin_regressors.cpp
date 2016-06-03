@@ -75,7 +75,7 @@ void SVR_static_lin_regressors::Read(std::ifstream& stream, const std::vector<st
 		LandmarkDetector::ReadMatBin(stream, m_tmp);
 		if(cv::norm(m_tmp - this->means > 0.00001))
 		{
-			cout << "Something went wrong with the SVR dynamic regressors" << endl;
+			cout << "Something went wrong with the SVR static regressors" << endl;
 		}
 	}
 

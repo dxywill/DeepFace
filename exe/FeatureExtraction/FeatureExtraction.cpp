@@ -688,7 +688,7 @@ int main (int argc, char **argv)
 		{
 			
 			// If the video is long enough post-process it for AUs
-			if (output_AUs && frame_count > 100)
+			if (output_AUs && frame_count > 1000)
 			{
 				cout << "Postprocessing the Action Unit predictions" << endl;
 

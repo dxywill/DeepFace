@@ -118,6 +118,11 @@ public:
 	std::vector<std::string> GetAUClassNames() const; // Presence
 	std::vector<std::string> GetAURegNames() const; // Intensity
 
+	// Identify if models are static or dynamic (useful for correction and shifting)
+	std::vector<bool> GetDynamicAUClass() const; // Presence
+	std::vector<bool> GetDynamicAUReg() const; // Intensity
+
+
 	void ExtractAllPredictionsOfflineReg(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps);
 	void ExtractAllPredictionsOfflineClass(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps);
 
