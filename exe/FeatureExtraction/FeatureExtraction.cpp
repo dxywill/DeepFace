@@ -153,7 +153,7 @@ void create_directory(string output_path)
 }
 
 void get_output_feature_params(vector<string> &output_similarity_aligned, vector<string> &output_hog_aligned_files, double &similarity_scale,
-	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose,
+	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose, bool& dynamic,
 	bool &output_2D_landmarks, bool &output_3D_landmarks, bool &output_model_params, bool &output_pose, bool &output_AUs, bool &output_gaze,
 	vector<string> &arguments);
 
@@ -235,7 +235,7 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 	cv::Point3f gazeDirection0, cv::Point3f gazeDirection1, const cv::Vec6d& pose_estimate, double fx, double fy, double cx, double cy,
 	const FaceAnalysis::FaceAnalyser& face_analyser);
 
-void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file);
+void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file, bool dynamic);
 
 
 int main (int argc, char **argv)
@@ -306,6 +306,7 @@ int main (int argc, char **argv)
 	bool grayscale = false;	
 	bool video_output = false;
 	bool rigid = false;	
+	bool dynamic = true; // Indicates if a dynamic AU model should be used (dynamic is useful if the video is long enough to include neutral expressions)
 	int num_hog_rows;
 	int num_hog_cols;
 
@@ -318,7 +319,7 @@ int main (int argc, char **argv)
 	bool output_AUs = true;
 	bool output_gaze = true;
 
-	get_output_feature_params(output_similarity_align, output_hog_align_files, sim_scale, sim_size, grayscale, rigid, verbose, 
+	get_output_feature_params(output_similarity_align, output_hog_align_files, sim_scale, sim_size, grayscale, rigid, verbose, dynamic,
 		output_2D_landmarks, output_3D_landmarks, output_model_params, output_pose, output_AUs, output_gaze, arguments);
 	
 	// Used for image masking
@@ -359,13 +360,24 @@ int main (int argc, char **argv)
 	int curr_img = -1;
 
 	string au_loc;
-	if(boost::filesystem::exists(path("AU_predictors/AU_all_best.txt")))
+
+	string au_loc_local;
+	if (dynamic)
 	{
-		au_loc = "AU_predictors/AU_all_best.txt";
+		au_loc_local = "AU_predictors/AU_all_best.txt";
 	}
 	else
 	{
-		path loc = path(arguments[0]).parent_path() / "AU_predictors/AU_all_best.txt";
+		au_loc_local = "AU_predictors/AU_all_static.txt";
+	}
+
+	if(boost::filesystem::exists(path(au_loc_local)))
+	{
+		au_loc = au_loc_local;
+	}
+	else
+	{
+		path loc = path(arguments[0]).parent_path() / au_loc_local;
 
 		if(exists(loc))
 		{
@@ -684,16 +696,10 @@ int main (int argc, char **argv)
 		
 		output_file.close();
 
-		if(output_files.size() > 0)
+		if(output_files.size() > 0 && output_AUs)
 		{
-			
-			// If the video is long enough post-process it for AUs
-			if (output_AUs && frame_count > 1000)
-			{
-				cout << "Postprocessing the Action Unit predictions" << endl;
-
-				post_process_output_file(face_analyser, output_files[f_n]);
-			}
+			cout << "Postprocessing the Action Unit predictions" << endl;
+			post_process_output_file(face_analyser, output_files[f_n], dynamic);
 		}
 		// Reset the models for the next video
 		face_analyser.Reset();
@@ -718,7 +724,7 @@ int main (int argc, char **argv)
 }
 
 // Allows for post processing of the AU signal
-void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file)
+void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string output_file, bool dynamic)
 {
 
 	vector<double> certainties;
@@ -728,8 +734,8 @@ void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string 
 	vector<std::pair<std::string, vector<double>>> predictions_class;
 
 	// Construct the new values to overwrite the output file with
-	face_analyser.ExtractAllPredictionsOfflineReg(predictions_reg, certainties, successes, timestamps);
-	face_analyser.ExtractAllPredictionsOfflineClass(predictions_class, certainties, successes, timestamps);
+	face_analyser.ExtractAllPredictionsOfflineReg(predictions_reg, certainties, successes, timestamps, dynamic);
+	face_analyser.ExtractAllPredictionsOfflineClass(predictions_class, certainties, successes, timestamps, dynamic);
 
 	int num_class = predictions_class.size();
 	int num_reg = predictions_reg.size();
@@ -1024,7 +1030,7 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 
 void get_output_feature_params(vector<string> &output_similarity_aligned, vector<string> &output_hog_aligned_files, double &similarity_scale,
-	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose,
+	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose, bool& dynamic,
 	bool &output_2D_landmarks, bool &output_3D_landmarks, bool &output_model_params, bool &output_pose, bool &output_AUs, bool &output_gaze,
 	vector<string> &arguments)
 {
@@ -1040,6 +1046,9 @@ void get_output_feature_params(vector<string> &output_similarity_aligned, vector
 
 	string input_root = "";
 	string output_root = "";
+
+	// By default the model is dynamic
+	dynamic = true;
 
 	// First check if there is a root argument (so that videos and outputs could be defined more easilly)
 	for (size_t i = 0; i < arguments.size(); ++i)
@@ -1087,6 +1096,10 @@ void get_output_feature_params(vector<string> &output_similarity_aligned, vector
 		else if (arguments[i].compare("-rigid") == 0)
 		{
 			rigid = true;
+		}
+		else if (arguments[i].compare("-au_static") == 0)
+		{
+			dynamic = false;
 		}
 		else if (arguments[i].compare("-g") == 0)
 		{

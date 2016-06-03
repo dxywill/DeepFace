@@ -592,10 +592,12 @@ void FaceAnalyser::PostprocessPredictions()
 	}
 }
 
-void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps)
+void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps, bool dynamic)
 {
-	
-	PostprocessPredictions();
+	if(dynamic)
+	{
+		PostprocessPredictions();
+	}
 
 	timestamps = this->timestamps;
 	au_predictions.clear();
@@ -624,14 +626,14 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 
 		}
 
-		if(!au_good.empty())
+		if(au_good.empty() || !dynamic)
 		{
-			std::sort(au_good.begin(), au_good.end());
-			offsets.push_back(au_good.at((int)au_good.size()/4));
+			offsets.push_back(0.0);
 		}
 		else
 		{
-			offsets.push_back(0.0);
+			std::sort(au_good.begin(), au_good.end());
+			offsets.push_back(au_good.at((int)au_good.size() / 4));
 		}
 		aus_valid.push_back(au_good);
 	}
@@ -649,7 +651,7 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 				
 				au_predictions[au].second[frame] = (au_predictions[au].second[frame] - offsets[au]) * scaling;
 				
-				if(au_predictions[au].second[frame] < 0.5)
+				if(au_predictions[au].second[frame] < 0.0)
 					au_predictions[au].second[frame] = 0;
 
 				if(au_predictions[au].second[frame] > 5)
@@ -666,9 +668,12 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 
 }
 
-void FaceAnalyser::ExtractAllPredictionsOfflineClass(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps)
+void FaceAnalyser::ExtractAllPredictionsOfflineClass(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps, bool dynamic)
 {
-	PostprocessPredictions();
+	if (dynamic)
+	{
+		PostprocessPredictions();
+	}
 
 	timestamps = this->timestamps;
 	au_predictions.clear();
@@ -678,6 +683,25 @@ void FaceAnalyser::ExtractAllPredictionsOfflineClass(vector<std::pair<std::strin
 		string au_name = au_iter->first;
 		vector<double> au_vals = au_iter->second;
 		
+		// Perform a moving average of 7 frames on classifications
+		int window_size = 7;
+		vector<double> au_vals_tmp = au_vals;
+		for (size_t i = (window_size - 1)/2; i < au_vals.size() - (window_size - 1) / 2; ++i)
+		{
+			double sum = 0;
+			for (int w = -(window_size - 1) / 2; w < (window_size - 1) / 2; ++w)
+			{
+				sum += au_vals_tmp[i + w];
+			}
+			sum = sum / window_size;
+			if (sum < 0.5)
+				sum = 0;
+			else
+				sum = 1;
+
+			au_vals[i] = sum;
+		}
+
 		au_predictions.push_back(std::pair<string,vector<double>>(au_name, au_vals));
 
 	}
