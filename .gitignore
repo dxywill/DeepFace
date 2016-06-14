@@ -20,3 +20,7 @@ matlab_runners/Feature Point Experiments/yt_features/
 matlab_runners/Feature Point Experiments/yt_features_clm/
 matlab_runners/Gaze Experiments/mpii_out/
 build/
+Release/AU_predictors/
+Release/
+exe/Recording/recording/
+ipch/
