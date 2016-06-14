@@ -9,10 +9,6 @@ out_loc = 'D:\Datasets\face_datasets/';
 unbc_dirs = dir(unbc_loc);
 unbc_dirs = unbc_dirs(3:end);
 
-if(~exist([out_loc, '/clm_params/'], 'file'))
-    mkdir([out_loc, '/clm_params/']);   
-end
-
 parfor f1=1:numel(unbc_dirs)
 
     unbc_dirs_level_2 = dir([unbc_loc, unbc_dirs(f1).name]);

@@ -13,32 +13,56 @@ executable = '"../../x64/Release/FeatureExtraction.exe"';
 
 bp4d_dirs = {'F002', 'F004', 'F006', 'F008', 'F010', 'F012', 'F014', 'F016', 'F018', 'F020', 'F022', 'M002', 'M004', 'M006', 'M008', 'M010', 'M012', 'M014', 'M016', 'M018'};
 
-parfor f1=1:numel(bp4d_dirs)
+%% Before running BP4D convert it to a smaller format and move each person to the same directory
+% This is done so that dynamic models would work on it as otherwise the
+% clips are a bit too short
 
-    if(isdir([bp4d_loc, bp4d_dirs{f1}]))
+new_bp4d_dirs = {};
+
+% This might take some time
+for i = 1:numel(bp4d_dirs)
+    dirs = dir([bp4d_loc, '/', bp4d_dirs{i}, '/T*']);
+    tmp_dir = [bp4d_loc, '/', bp4d_dirs{i}, '/tmp/'];
+    new_bp4d_dirs = cat(1, new_bp4d_dirs, tmp_dir);
+    
+    if(~exist(tmp_dir, 'file'))
+        mkdir(tmp_dir);
         
-        bp4d_2_dirs = dir([bp4d_loc, bp4d_dirs{f1}]);
-        bp4d_2_dirs = bp4d_2_dirs(3:end);
-        
-        f1_dir = bp4d_dirs{f1};
-
-        command = [executable ' -asvid -q -no2Dfp -no3Dfp -noMparams -noPose -noGaze '];
-
-        for f2=1:numel(bp4d_2_dirs)
-            f2_dir = bp4d_2_dirs(f2).name;
-            if(isdir([bp4d_loc, bp4d_dirs{f1}]))
+        % Move all images and resize them
+        for d=1:numel(dirs)
+           
+            in_files = dir([bp4d_loc, '/', bp4d_dirs{i}, '/', dirs(d).name, '/*.jpg']);
+            
+            for img_ind=1:numel(in_files)
+               
+                img_file = [bp4d_loc, '/', bp4d_dirs{i}, '/', dirs(d).name, '/', in_files(img_ind).name];
+                img = imread(img_file);
+                img = imresize(img, 0.5);
+                img_out = [tmp_dir, dirs(d).name, '_', in_files(img_ind).name];
+                imwrite(img, img_out);
                 
-                curr_vid = [bp4d_loc, f1_dir, '/', f2_dir, '/'];
-
-                name = [f1_dir '_' f2_dir];
-                output_file = [out_loc name '.au.txt'];
-                
-                command = cat(2, command, [' -fdir "' curr_vid '" -of "' output_file '"']);
             end
+            
         end
         
-        dos(command);
     end
+    
+end
+%%
+
+parfor f1=1:numel(new_bp4d_dirs)
+    % TODO rem - attempt a static model
+    command = [executable ' -asvid -no2Dfp -no3Dfp -noMparams -noPose -noGaze '];
+
+    [f,~,~] = fileparts(new_bp4d_dirs{f1});
+    [f,~,~] = fileparts(f);
+    [~,f,~] = fileparts(f);
+    output_file = [out_loc f '.au.txt'];
+
+    command = cat(2, command, [' -fdir "' new_bp4d_dirs{f1} '" -of "' output_file '"']);
+
+    dos(command);
+
 end
 
 %%
@@ -52,7 +76,7 @@ aus_BP4D = [1, 2, 4, 6, 7, 10, 12, 14, 15, 17, 23];
 labels_gt = cat(1, labels_gt{:});
 
 %% Identifying which column IDs correspond to which AU
-tab = readtable([out_loc, bp4d_dirs{1}, '_T1.au.txt']);
+tab = readtable([out_loc, bp4d_dirs{1}, '.au.txt']);
 column_names = tab.Properties.VariableNames;
 
 % As there are both classes and intensities list and evaluate both of them
@@ -92,9 +116,13 @@ end
 preds_all_class = [];
 preds_all_int = [];
 
-for i=1:numel(filenames)
+for i=1:numel(new_bp4d_dirs)
    
-    fname = [out_loc, filenames{i}, '.au.txt'];
+    [f,~,~] = fileparts(new_bp4d_dirs{i});
+    [f,~,~] = fileparts(f);
+    [~,f,~] = fileparts(f);
+    
+    fname = [out_loc, f, '.au.txt'];
     preds = dlmread(fname, ',', 1, 0);
     
     % Read all of the intensity AUs

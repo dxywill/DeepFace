@@ -11,7 +11,7 @@ for i =1:numel(models)
     
     F1_orig = compute_F1(valid_labels, predictions_all);
     F1s_sm(i, 1) = F1_orig;
-    spans = [3, 5, 7, 9, 11, 13, 15];
+    spans = [3, 5, 7, 9, 11, 13];
     sp = 2;
     for s = spans
         pred_smooth = smooth(predictions_all, s, 'moving');

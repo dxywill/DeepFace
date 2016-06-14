@@ -324,7 +324,7 @@ int main (int argc, char **argv)
 	
 	// Used for image masking
 
-	cv::Mat_<int> triangulation;
+	cv::Mat_<int> triangulation;//TODO rem?
 	string tri_loc;
 	if(boost::filesystem::exists(path("model/tris_68_full.txt")))
 	{

@@ -75,9 +75,21 @@ labels_devel = cat(1, labels_devel{:});
 
 valid_ids_test = valid_ids_devel_hog;
 
-% normalise the data
-load(pca_file);
-     
+% Peforming zone specific masking
+if(au_train < 8 || au_train == 43 || au_train == 45) % upper face AUs ignore bottom face
+    % normalise the data
+    pca_file = '../../pca_generation/generic_face_upper.mat';
+    load(pca_file);
+elseif(au_train > 9) % lower face AUs ignore upper face and the sides
+    % normalise the data
+    pca_file = '../../pca_generation/generic_face_lower.mat';
+    load(pca_file);
+elseif(au_train == 9) % Central face model
+    % normalise the data
+    pca_file = '../../pca_generation/generic_face_rigid.mat';
+    load(pca_file);
+end
+
 PC_n = zeros(size(PC)+size(train_geom_data, 2));
 PC_n(1:size(PC,1), 1:size(PC,2)) = PC;
 PC_n(size(PC,1)+1:end, size(PC,2)+1:end) = eye(size(train_geom_data, 2));

@@ -99,6 +99,10 @@ public:
 	std::vector<std::pair<std::string, double>> GetCurrentAUsReg() const;   // AU intensity
 	std::vector<std::pair<std::string, double>> GetCurrentAUsCombined() const; // Both presense and intensity
 
+	// A standalone call for predicting AUs from a static image, the first element in the pair represents occurence the second intensity
+	// This call is useful for detecting action units in images
+	std::pair<std::vector<std::pair<string, double>>, std::vector<std::pair<string, double>>> PredictStaticAUs(const cv::Mat& frame, const LandmarkDetector::CLNF& clnf, bool visualise = true);
+
 	void Reset();
 
 	void GetLatestHOG(cv::Mat_<double>& hog_descriptor, int& num_rows, int& num_cols);
@@ -123,8 +127,8 @@ public:
 	std::vector<bool> GetDynamicAUReg() const; // Intensity
 
 
-	void ExtractAllPredictionsOfflineReg(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps);
-	void ExtractAllPredictionsOfflineClass(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps);
+	void ExtractAllPredictionsOfflineReg(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps, bool dynamic);
+	void ExtractAllPredictionsOfflineClass(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps, bool dynamic);
 
 private:
 

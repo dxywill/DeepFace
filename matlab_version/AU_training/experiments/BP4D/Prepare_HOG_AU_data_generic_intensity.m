@@ -1,5 +1,5 @@
 function [data_train, labels_train, vid_ids_train_string, data_devel, labels_devel, vid_ids_devel_string, raw_devel, PC, means_norm, stds_norm, success_devel] = ...
-    Prepare_HOG_AU_data_generic_intensity(train_users, devel_users, au_train, bp4d_dir, hog_data_dir, pca_file)
+    Prepare_HOG_AU_data_generic_intensity(train_users, devel_users, au_train, bp4d_dir, hog_data_dir)
 
 %%
 addpath(genpath('../data extraction/'));
@@ -76,8 +76,20 @@ labels_devel = cat(1, labels_devel{:});
 
 success_devel = valid_ids_devel;
 
-% normalise the data
-load(pca_file);
+% Peforming zone specific masking
+if(au_train < 8 || au_train == 43 || au_train == 45) % upper face AUs ignore bottom face
+    % normalise the data
+    pca_file = '../../pca_generation/generic_face_upper.mat';
+    load(pca_file);
+elseif(au_train > 9) % lower face AUs ignore upper face and the sides
+    % normalise the data
+    pca_file = '../../pca_generation/generic_face_lower.mat';
+    load(pca_file);
+elseif(au_train == 9) % Central face model
+    % normalise the data
+    pca_file = '../../pca_generation/generic_face_rigid.mat';
+    load(pca_file);
+end
 
 PC_n = zeros(size(PC)+size(devel_geom_data, 2));
 PC_n(1:size(PC,1), 1:size(PC,2)) = PC;

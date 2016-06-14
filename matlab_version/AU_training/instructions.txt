@@ -3,6 +3,6 @@
     - run all of the extract_features_*.m scripts 
     - this will take some time: 4-20 hours depending on your machine as you will need to process a lot of visual data
     - you need to make sure you have the right datasets and they are in the right locations
-
+    - Note for Bosphorus you will need to change the code a bit and add face_model.Reset(); after frame_count++ line in FeatureExtraction.cpp (this is because the images are not from a video and are quite far from each other).
 
 Create a PCA model

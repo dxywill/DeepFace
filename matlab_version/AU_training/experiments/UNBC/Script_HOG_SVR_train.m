@@ -2,6 +2,9 @@ function Script_HOG_SVR_train()
 
 % Change to your downloaded location
 addpath('C:\liblinear\matlab')
+addpath('../training_code/');
+addpath('../utilities/');
+addpath('../../data extraction/');
 
 %% load shared definitions and AU data
 shared_defs;
@@ -18,7 +21,6 @@ svr_train = @svr_train_linear;
 % Set the test function (the first output will be used for validation)
 svr_test = @svr_test_linear;
 
-pca_loc = '../../pca_generation/generic_face_rigid.mat';
 all_recs = cat(2, train_recs, devel_recs);
 
 %%
@@ -31,7 +33,7 @@ for a=1:numel(aus)
     [users_train, users_valid] = get_balanced_fold(UNBC_dir, all_recs, au, 1/3, 1);
     
     % load the training and testing data for the current fold    
-    [train_samples, train_labels, valid_samples, valid_labels, ~, PC, means, scaling, valid_ids, valid_success] = Prepare_HOG_AU_data(users_train, users_valid, au, rest_aus, UNBC_dir, hog_data_dir, pca_loc);
+    [train_samples, train_labels, valid_samples, valid_labels, ~, PC, means, scaling, valid_ids, valid_success] = Prepare_HOG_AU_data(users_train, users_valid, au, rest_aus, UNBC_dir, hog_data_dir);
         
     train_samples = sparse(train_samples);
     valid_samples = sparse(valid_samples);

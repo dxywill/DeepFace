@@ -303,6 +303,59 @@ void FaceAnalyser::ExtractCurrentMedians(vector<cv::Mat>& hog_medians, vector<cv
 	}
 }
 
+std::pair<std::vector<std::pair<string, double>>, std::vector<std::pair<string, double>>> FaceAnalyser::PredictStaticAUs(const cv::Mat& frame, const LandmarkDetector::CLNF& clnf, bool visualise)
+{
+	
+	// First align the face
+	AlignFaceMask(aligned_face, frame, clnf, triangulation, true, align_scale, align_width, align_height);
+	
+	// Extract HOG descriptor from the frame and convert it to a useable format
+	cv::Mat_<double> hog_descriptor;
+	Extract_FHOG_descriptor(hog_descriptor, aligned_face, this->num_hog_rows, this->num_hog_cols);
+
+	// Store the descriptor
+	hog_desc_frame = hog_descriptor;
+
+	cv::Vec3d curr_orient(clnf.params_global[1], clnf.params_global[2], clnf.params_global[3]);
+	int orientation_to_use = GetViewId(this->head_orientations, curr_orient);
+	
+	// Geom descriptor and its median
+	geom_descriptor_frame = clnf.params_local.t();
+
+	// Stack with the actual feature point locations (without mean)
+	cv::Mat_<double> locs = clnf.pdm.princ_comp * geom_descriptor_frame.t();
+
+	cv::hconcat(locs.t(), geom_descriptor_frame.clone(), geom_descriptor_frame);
+	
+	// First convert the face image to double representation as a row vector
+	cv::Mat_<uchar> aligned_face_cols(1, aligned_face.cols * aligned_face.rows * aligned_face.channels(), aligned_face.data, 1);
+	cv::Mat_<double> aligned_face_cols_double;
+	aligned_face_cols.convertTo(aligned_face_cols_double, CV_64F);
+
+	// Visualising the median HOG
+	if (visualise)
+	{
+		FaceAnalysis::Visualise_FHOG(hog_descriptor, num_hog_rows, num_hog_cols, hog_descriptor_visualisation);
+	}
+
+	// Perform AU prediction	
+	auto AU_predictions_intensity = PredictCurrentAUs(orientation_to_use);
+	auto AU_predictions_occurence = PredictCurrentAUsClass(orientation_to_use);
+
+	// Make sure intensity is within range (0-5)
+	for (size_t au = 0; au < AU_predictions_intensity.size(); ++au)
+	{
+		if (AU_predictions_intensity[au].second < 0)
+			AU_predictions_intensity[au].second = 0;
+
+		if (AU_predictions_intensity[au].second > 5)
+			AU_predictions_intensity[au].second = 5;
+	}
+
+	return std::pair<std::vector<std::pair<std::string, double>>, std::vector<std::pair<std::string, double>>>(AU_predictions_intensity, AU_predictions_occurence);
+
+}
+
 void FaceAnalyser::AddNextFrame(const cv::Mat& frame, const LandmarkDetector::CLNF& clnf_model, double timestamp_seconds, bool online, bool visualise)
 {
 
@@ -607,7 +660,6 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 	confidences = this->confidences;
 	successes = this->valid_preds;
 
-	// TODO only if the video is long enough or there is enough range? Compare stdev of BP4D and this
 	for(auto au_iter = AU_predictions_reg_all_hist.begin(); au_iter != AU_predictions_reg_all_hist.end(); ++au_iter)
 	{
 		vector<double> au_good;
@@ -663,6 +715,28 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 				au_predictions[au].second[frame] = 0;
 			}
 		}
+	}
+
+	// Perform some prediction smoothing
+	for (auto au_iter = au_predictions.begin(); au_iter != au_predictions.end(); ++au_iter)
+	{
+		string au_name = au_iter->first;
+
+		// Perform a moving average of 3 frames
+		int window_size = 3;
+		vector<double> au_vals_tmp = au_iter->second;
+		for (size_t i = (window_size - 1) / 2; i < au_iter->second.size() - (window_size - 1) / 2; ++i)
+		{
+			double sum = 0;
+			for (int w = -(window_size - 1) / 2; w < (window_size - 1) / 2; ++w)
+			{
+				sum += au_vals_tmp[i + w];
+			}
+			sum = sum / window_size;
+
+			au_iter->second[i] = sum;
+		}
+
 	}
 
 

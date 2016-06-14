@@ -2,6 +2,9 @@ function Script_HOG_SVM_train()
 
 % Change to your downloaded location
 addpath('C:\liblinear\matlab')
+addpath('../training_code/');
+addpath('../utilities/');
+addpath('../../data extraction/');
 
 %% load shared definitions and AU data
 shared_defs;
@@ -18,7 +21,6 @@ svm_train = @svm_train_linear;
 % Set the test function (the first output will be used for validation)
 svm_test = @svm_test_linear;
 
-pca_loc = '../../pca_generation/generic_face_rigid.mat';
 all_recs = cat(2, train_recs, devel_recs);
 
 %%
@@ -31,7 +33,7 @@ for a=1:numel(aus)
     [users_train, users_valid] = get_balanced_fold(UNBC_dir, all_recs, au, 1/3, 1);
     
     % load the training and testing data for the current fold    
-    [train_samples, train_labels, valid_samples, valid_labels, ~, PC, means, scaling] = Prepare_HOG_AU_data(users_train, users_valid, au, rest_aus, UNBC_dir, hog_data_dir, pca_loc);
+    [train_samples, train_labels, valid_samples, valid_labels, ~, PC, means, scaling] = Prepare_HOG_AU_data(users_train, users_valid, au, rest_aus, UNBC_dir, hog_data_dir);
     
     % Binarizing the data
     train_labels(train_labels > 1) = 1;

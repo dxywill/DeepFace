@@ -14,10 +14,10 @@ hyperparams.p = 10.^(-2);
 hyperparams.validate_params = {'c', 'p'};
 
 % Set the training function
-svr_train = @svr_train_linear_shift_fancy;
+svr_train = @svr_train_linear_shift;
     
 % Set the test function (the first output will be used for validation)
-svr_test = @svr_test_linear_shift_fancy;
+svr_test = @svr_test_linear_shift;
 
 pca_loc = '../../pca_generation/generic_face_rigid.mat';
 
