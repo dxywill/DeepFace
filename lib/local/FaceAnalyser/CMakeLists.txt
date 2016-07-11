@@ -1,3 +1,6 @@
+#TBB library
+include_directories(${TBB_ROOT_DIR}/include)
+
 include_directories(${BOOST_INCLUDE_DIR})
 
 SET(SOURCE
