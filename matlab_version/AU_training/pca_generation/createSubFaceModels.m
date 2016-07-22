@@ -1,12 +1,24 @@
 clear;
 
-%% CK+, FERA2011, UNBC and Bosphorus datasets
+%% CK+, FERA2011, and UNBC datasets
 hog_dir = 'D:\Datasets/face_datasets/hog_aligned_rigid/';
 hog_files = dir([hog_dir, '*.hog']);
 
 [appearance_data, valid_inds, vid_ids_train] = Read_HOG_files_small(hog_files, hog_dir);
 appearance_data = appearance_data(valid_inds,:);
 vid_ids_train = vid_ids_train(valid_inds,:);
+
+%% Bosphorus dataset
+hog_dir = 'D:\Datasets/face_datasets/hog_aligned_rigid_b/';
+hog_files = dir([hog_dir, '*.hog']);
+
+[appearance_data_bosph, valid_inds, vid_ids_train_bosph] = Read_HOG_files_small(hog_files, hog_dir);
+
+appearance_data_bosph = appearance_data_bosph(valid_inds,:);
+vid_ids_train_bosph = vid_ids_train_bosph(valid_inds,:);
+
+appearance_data = cat(1,appearance_data, appearance_data_bosph);
+vid_ids_train = cat(1,vid_ids_train, vid_ids_train_bosph);
 
 %% DISFA
 hog_dir = 'D:\Datasets\DISFA\hog_aligned_rigid/';

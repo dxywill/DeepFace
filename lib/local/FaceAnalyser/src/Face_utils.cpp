@@ -249,7 +249,7 @@ namespace FaceAnalysis
 
 		for(size_t i = 0; i < aligned_face_channels.size(); ++i)
 		{
-			aligned_face_channels[i] = aligned_face_channels[i].mul(paw.pixel_mask);
+			cv::multiply(aligned_face_channels[i], paw.pixel_mask, aligned_face_channels[i], 1.0, CV_8U);
 		}
 
 		if(aligned_face.channels() == 3)

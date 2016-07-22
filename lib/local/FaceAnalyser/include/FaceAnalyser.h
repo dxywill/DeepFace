@@ -124,7 +124,7 @@ public:
 
 	// Identify if models are static or dynamic (useful for correction and shifting)
 	std::vector<bool> GetDynamicAUClass() const; // Presence
-	std::vector<bool> GetDynamicAUReg() const; // Intensity
+	std::vector<std::pair<string, bool>> FaceAnalyser::GetDynamicAUReg() const; // Intensity
 
 
 	void ExtractAllPredictionsOfflineReg(vector<std::pair<std::string, vector<double>>>& au_predictions, vector<double>& confidences, vector<bool>& successes, vector<double>& timestamps, bool dynamic);

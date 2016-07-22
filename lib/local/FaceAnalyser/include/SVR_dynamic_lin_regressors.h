@@ -89,6 +89,11 @@ public:
 		return AU_names;
 	}
 
+	std::vector<double> GetCutoffs() const
+	{
+		return cutoffs;		
+	}
+
 private:
 
 	// The names of Action Units this model is responsible for
@@ -100,6 +105,9 @@ private:
 	// For actual prediction
 	cv::Mat_<double> support_vectors;	
 	cv::Mat_<double> biases;
+
+	// For AU callibration (see the OpenFace paper)
+	std::vector<double> cutoffs;
 
 };
   //===========================================================================

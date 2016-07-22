@@ -50,12 +50,13 @@ function [hog_data, valid_inds, vid_id] = Read_HOG_files_small(hog_files, hog_da
                 feature_vec = fread(f, [4 + num_rows * num_cols * num_chan, 5000], 'float32');
                 feature_vec = feature_vec(4:end,:)';
                 
-                num_rows_read = size(feature_vec,1);
-                
-                curr_data_buff(curr_ind+1:curr_ind+num_rows_read,:) = feature_vec;
-                %valid_data_buff = 
-                curr_ind = curr_ind + size(feature_vec,1);
-                
+                if(~isempty(feature_vec))
+                    num_rows_read = size(feature_vec,1);
+
+                    curr_data_buff(curr_ind+1:curr_ind+num_rows_read,:) = feature_vec;
+                    %valid_data_buff = 
+                    curr_ind = curr_ind + size(feature_vec,1);
+                end
             end
                         
         end

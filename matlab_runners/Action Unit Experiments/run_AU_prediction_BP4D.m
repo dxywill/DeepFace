@@ -22,7 +22,8 @@ new_bp4d_dirs = {};
 % This might take some time
 for i = 1:numel(bp4d_dirs)
     dirs = dir([bp4d_loc, '/', bp4d_dirs{i}, '/T*']);
-    tmp_dir = [bp4d_loc, '/', bp4d_dirs{i}, '/tmp/'];
+    
+    tmp_dir = [bp4d_loc, '/../tmp/', bp4d_dirs{i}, '/'];
     new_bp4d_dirs = cat(1, new_bp4d_dirs, tmp_dir);
     
     if(~exist(tmp_dir, 'file'))
@@ -51,11 +52,10 @@ end
 %%
 
 parfor f1=1:numel(new_bp4d_dirs)
-    % TODO rem - attempt a static model
+    
     command = [executable ' -asvid -no2Dfp -no3Dfp -noMparams -noPose -noGaze '];
 
     [f,~,~] = fileparts(new_bp4d_dirs{f1});
-    [f,~,~] = fileparts(f);
     [~,f,~] = fileparts(f);
     output_file = [out_loc f '.au.txt'];
 
@@ -98,14 +98,7 @@ for c=1:numel(column_names)
 end
 
 %%
-inds_au_int = zeros(size(aus_BP4D));
 inds_au_class = zeros(size(aus_BP4D));
-
-for ind=1:numel(aus_BP4D)  
-    if(~isempty(find(aus_pred_int==aus_BP4D(ind), 1)))
-        inds_au_int(ind) = find(aus_pred_int==aus_BP4D(ind));
-    end
-end
 
 for ind=1:numel(aus_BP4D)  
     if(~isempty(find(aus_pred_class==aus_BP4D(ind), 1)))
@@ -114,45 +107,26 @@ for ind=1:numel(aus_BP4D)
 end
 
 preds_all_class = [];
-preds_all_int = [];
 
 for i=1:numel(new_bp4d_dirs)
    
     [f,~,~] = fileparts(new_bp4d_dirs{i});
-    [f,~,~] = fileparts(f);
     [~,f,~] = fileparts(f);
     
     fname = [out_loc, f, '.au.txt'];
     preds = dlmread(fname, ',', 1, 0);
     
-    % Read all of the intensity AUs
-    preds_int = preds(:, inds_int_in_file);
     
     % Read all of the classification AUs
     preds_class = preds(:, inds_class_in_file);
     
     preds_all_class = cat(1, preds_all_class, preds_class);
-    preds_all_int = cat(1, preds_all_int, preds_int);
 end
 
 %%
-f = fopen('BP4D_valid_res_class.txt', 'w');
+f = fopen('results/BP4D_valid_res_class.txt', 'w');
 for au = 1:numel(aus_BP4D)
 
-    if(inds_au_int(au) ~= 0)
-        tp = sum(labels_gt(:,au) == 1 & preds_all_int(:, inds_au_int(au)) >= 1);
-        fp = sum(labels_gt(:,au) == 0 & preds_all_int(:, inds_au_int(au)) >= 1);
-        fn = sum(labels_gt(:,au) == 1 & preds_all_int(:, inds_au_int(au)) < 1);
-        tn = sum(labels_gt(:,au) == 0 & preds_all_int(:, inds_au_int(au)) < 1);
-
-        precision = tp./(tp+fp);
-        recall = tp./(tp+fn);
-
-        f1 = 2 * precision .* recall ./ (precision + recall);
-
-        fprintf(f, 'AU%d intensity, Precision - %.3f, Recall - %.3f, F1 - %.3f\n', aus_BP4D(au), precision, recall, f1);
-    end
-    
     if(inds_au_class(au) ~= 0)
         tp = sum(labels_gt(:,au) == 1 & preds_all_class(:, inds_au_class(au)) == 1);
         fp = sum(labels_gt(:,au) == 0 & preds_all_class(:, inds_au_class(au)) == 1);
@@ -177,10 +151,11 @@ find_BP4D;
 
 aus_BP4D = [6, 10, 12, 14, 17];
 [ labels_gt, valid_ids, vid_ids, filenames] = extract_BP4D_labels_intensity(BP4D_dir_int, devel_recs, aus_BP4D);
+valid_ids = cat(1, valid_ids{:});
 labels_gt = cat(1, labels_gt{:});
 
 %% Identifying which column IDs correspond to which AU
-tab = readtable([out_loc, bp4d_dirs{1}, '_T1.au.txt']);
+tab = readtable([out_loc, bp4d_dirs{1}, '.au.txt']);
 column_names = tab.Properties.VariableNames;
 
 % As there are both classes and intensities list and evaluate both of them
@@ -205,9 +180,12 @@ end
 
 preds_all_int = [];
 
-for i=1:numel(filenames)
+for i=1:numel(new_bp4d_dirs)
    
-    fname = [out_loc, filenames{i}, '.au.txt'];
+    [f,~,~] = fileparts(new_bp4d_dirs{i});
+    [~,f,~] = fileparts(f);
+    
+    fname = [out_loc, f, '.au.txt'];
     preds = dlmread(fname, ',', 1, 0);
     
     % Read all of the intensity AUs
@@ -216,9 +194,9 @@ for i=1:numel(filenames)
 end
 
 %%
-f = fopen('BP4D_valid_res_int.txt', 'w');
+f = fopen('results/BP4D_valid_res_int.txt', 'w');
 for au = 1:numel(aus_BP4D)
-    [ accuracies, F1s, corrs, ccc, rms, classes ] = evaluate_au_prediction_results( preds_all_int(:, inds_au_int(au)), labels_gt(:,au));
-    fprintf(f, 'AU%d results - corr %.3f, ccc - %.3f\n', aus_BP4D(au), corrs, ccc);    
+    [ accuracies, F1s, corrs, ccc, rms, classes ] = evaluate_au_prediction_results( preds_all_int(valid_ids, inds_au_int(au)), labels_gt(valid_ids,au));
+    fprintf(f, 'AU%d results - rms %.3f, corr %.3f, ccc - %.3f\n', aus_BP4D(au), rms, corrs, ccc);    
 end
 fclose(f);

@@ -324,12 +324,9 @@ int main (int argc, char **argv)
 	
 	// Used for image masking
 
-	cv::Mat_<int> triangulation;//TODO rem?
 	string tri_loc;
 	if(boost::filesystem::exists(path("model/tris_68_full.txt")))
 	{
-		std::ifstream triangulation_file("model/tris_68_full.txt");
-		LandmarkDetector::ReadMat(triangulation_file, triangulation);
 		tri_loc = "model/tris_68_full.txt";
 	}
 	else
@@ -337,12 +334,7 @@ int main (int argc, char **argv)
 		path loc = path(arguments[0]).parent_path() / "model/tris_68_full.txt";
 		tri_loc = loc.string();
 
-		if(exists(loc))
-		{
-			std::ifstream triangulation_file(loc.string());
-			LandmarkDetector::ReadMat(triangulation_file, triangulation);
-		}
-		else
+		if(!exists(loc))
 		{
 			cout << "Can't find triangulation files, exiting" << endl;
 			return 0;

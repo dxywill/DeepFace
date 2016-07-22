@@ -384,7 +384,7 @@ void get_image_input_output_params(vector<string> &input_image_files, vector<str
 			path image_loc(input_image_files[i]);
 
 			path fname = image_loc.filename();
-			fname = fname.replace_extension("jpg");
+			fname = fname.replace_extension("bmp");
 			output_image_files.push_back(out_img_dir + "/" + fname.string());
 			
 		}

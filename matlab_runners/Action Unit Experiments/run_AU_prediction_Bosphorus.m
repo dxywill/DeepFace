@@ -23,7 +23,7 @@ parfor f1=1:numel(bosph_dirs)
 
     input_dir = [Bosphorus_dir, '/BosphorusDB/BosphorusDB/', bosph_dirs(f1).name];
     command = cat(2, command, [' -fdir "' input_dir '" -ofdir "' out_loc '"']);
-    command = cat(2, command, ' -multi_view 1 -wild');
+    command = cat(2, command, ' -multi_view 1 -wild -q');
 
     dos(command);
 
@@ -97,7 +97,7 @@ for i=1:numel(filenames)
 end
 
 %%
-f = fopen('Bosphorus_res_class.txt', 'w');
+f = fopen('results/Bosphorus_res_class.txt', 'w');
 labels_gt_bin = labels_gt;
 labels_gt_bin(labels_gt_bin > 1) = 1;
 for au = 1:numel(aus_Bosph)
@@ -179,22 +179,12 @@ for i=1:numel(filenames)
 end
 
 %%
-f = fopen('Bosphorus_res_class.txt', 'w');
-labels_gt_bin = labels_gt;
-labels_gt_bin(labels_gt_bin > 1) = 1;
+f = fopen('results/Bosphorus_res_int.txt', 'w');
 for au = 1:numel(aus_Bosph)
   
-    tp = sum(labels_gt_bin(:,au) == 1 & labels_pred(:, au) == 1);
-    fp = sum(labels_gt_bin(:,au) == 0 & labels_pred(:, au) == 1);
-    fn = sum(labels_gt_bin(:,au) == 1 & labels_pred(:, au) == 0);
-    tn = sum(labels_gt_bin(:,au) == 0 & labels_pred(:, au) == 0);
-
-    precision = tp./(tp+fp);
-    recall = tp./(tp+fn);
-
-    f1 = 2 * precision .* recall ./ (precision + recall);
-
-    fprintf(f, 'AU%d class, Precision - %.3f, Recall - %.3f, F1 - %.3f\n', aus_Bosph(au), precision, recall, f1);
+    [ ~, ~, corrs, ccc, rms, ~ ] = evaluate_regression_results( labels_pred(:, au), labels_gt(:, au));
+    
+    fprintf(f, 'AU%d intensity, Corr - %.3f, RMS - %.3f, CCC - %.3f\n', aus_Bosph(au), corrs, rms, ccc);
 
 end
 fclose(f);

@@ -13,6 +13,7 @@ function [result, prediction] = svr_test_linear(test_labels, test_samples, model
         result = corr(test_labels, prediction);
         [ ~, ~, ~, ccc, ~, ~ ] = evaluate_regression_results( prediction, test_labels ); 
         result = ccc;
+        fprintf('CCC: %.3f\n', ccc);
     else
         eval_ids = unique(model.eval_ids)';
         ccc = 0;

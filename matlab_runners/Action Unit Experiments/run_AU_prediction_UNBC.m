@@ -17,7 +17,7 @@ unbc_dirs = {'042-ll042', '043-jh043', '047-jl047', '048-aa048', '049-bm049',...
             '103-jk103', '106-nm106', '107-hs107', '108-th108', '109-ib109',...
             '115-jy115', '120-kz120', '121-vw121', '123-jh123', '124-dn124'};
         
-parfor f1=1:numel(unbc_dirs)
+for f1=1:numel(unbc_dirs)
 
     if(isdir([unbc_loc, unbc_dirs{f1}]))
         
@@ -61,25 +61,18 @@ column_names = tab.Properties.VariableNames;
 
 % As there are both classes and intensities list and evaluate both of them
 aus_pred_int = [];
-aus_pred_class = [];
 
 inds_int_in_file = [];
-inds_class_in_file = [];
 
 for c=1:numel(column_names)
     if(strfind(column_names{c}, '_r') > 0)
         aus_pred_int = cat(1, aus_pred_int, int32(str2num(column_names{c}(3:end-2))));
         inds_int_in_file = cat(1, inds_int_in_file, c);
     end
-    if(strfind(column_names{c}, '_c') > 0)
-        aus_pred_class = cat(1, aus_pred_class, int32(str2num(column_names{c}(3:end-2))));
-        inds_class_in_file = cat(1, inds_class_in_file, c);
-    end
 end
 
 %%
 inds_au_int = zeros(size(aus_UNBC));
-inds_au_class = zeros(size(aus_UNBC));
 
 for ind=1:numel(aus_UNBC)  
     if(~isempty(find(aus_pred_int==aus_UNBC(ind), 1)))
@@ -87,13 +80,7 @@ for ind=1:numel(aus_UNBC)
     end
 end
 
-for ind=1:numel(aus_UNBC)  
-    if(~isempty(find(aus_pred_class==aus_UNBC(ind), 1)))
-        inds_au_class(ind) = find(aus_pred_class==aus_UNBC(ind));
-    end
-end
 
-preds_all_class = [];
 preds_all_int = [];
 
 for i=1:numel(filenames)
@@ -106,83 +93,15 @@ for i=1:numel(filenames)
     % Read all of the intensity AUs
     preds_int = preds(:, inds_int_in_file);
     
-    % Read all of the classification AUs
-    preds_class = preds(:, inds_class_in_file);
-    
-    preds_all_class = cat(1, preds_all_class, preds_class);
     preds_all_int = cat(1, preds_all_int, preds_int);
 end
 
 %%
-f = fopen('UNBC_valid_res_class.txt', 'w');
+f = fopen('results/UNBC_valid_res_int.txt', 'w');
 for au = 1:numel(aus_UNBC)
     
-    if(inds_au_class(au) ~= 0)
-        tp = sum(labels_gt(:,au) == 1 & preds_all_class(:, inds_au_class(au)) == 1);
-        fp = sum(labels_gt(:,au) == 0 & preds_all_class(:, inds_au_class(au)) == 1);
-        fn = sum(labels_gt(:,au) == 1 & preds_all_class(:, inds_au_class(au)) == 0);
-        tn = sum(labels_gt(:,au) == 0 & preds_all_class(:, inds_au_class(au)) == 0);
-
-        precision = tp./(tp+fp);
-        recall = tp./(tp+fn);
-
-        f1 = 2 * precision .* recall ./ (precision + recall);
-
-        fprintf(f, 'AU%d class, Precision - %.3f, Recall - %.3f, F1 - %.3f\n', aus_UNBC(au), precision, recall, f1);
-    end    
-    
-end
-fclose(f);
-
-%%
-addpath('./helpers/');
-
-find_BP4D;
-
-aus_UNBC = [6, 10, 12, 14, 17];
-[ labels_gt, valid_ids, vid_ids, filenames] = extract_BP4D_labels_intensity(BP4D_dir_int, devel_recs, aus_UNBC);
-labels_gt = cat(1, labels_gt{:});
-
-%% Identifying which column IDs correspond to which AU
-tab = readtable([out_loc, bp4d_dirs{1}, '_T1.au.txt']);
-column_names = tab.Properties.VariableNames;
-
-% As there are both classes and intensities list and evaluate both of them
-aus_pred_int = [];
-inds_int_in_file = [];
-
-for c=1:numel(column_names)
-    if(strfind(column_names{c}, '_r') > 0)
-        aus_pred_int = cat(1, aus_pred_int, int32(str2num(column_names{c}(3:end-2))));
-        inds_int_in_file = cat(1, inds_int_in_file, c);
-    end
-end
-
-%%
-inds_au_int = zeros(size(aus_UNBC));
-
-for ind=1:numel(aus_UNBC)  
-    if(~isempty(find(aus_pred_int==aus_UNBC(ind), 1)))
-        inds_au_int(ind) = find(aus_pred_int==aus_UNBC(ind));
-    end
-end
-
-preds_all_int = [];
-
-for i=1:numel(filenames)
-   
-    fname = [out_loc, filenames{i}, '.au.txt'];
-    preds = dlmread(fname, ',', 1, 0);
-    
-    % Read all of the intensity AUs
-    preds_int = preds(:, inds_int_in_file);    
-    preds_all_int = cat(1, preds_all_int, preds_int);
-end
-
-%%
-f = fopen('BP4D_valid_res_int.txt', 'w');
-for au = 1:numel(aus_UNBC)
     [ accuracies, F1s, corrs, ccc, rms, classes ] = evaluate_au_prediction_results( preds_all_int(:, inds_au_int(au)), labels_gt(:,au));
-    fprintf(f, 'AU%d results - corr %.3f, ccc - %.3f\n', aus_UNBC(au), corrs, ccc);    
+    fprintf(f, 'AU%d results - rms %.3f, corr %.3f, ccc - %.3f\n', aus_UNBC(au), rms, corrs, ccc);  
+    
 end
 fclose(f);

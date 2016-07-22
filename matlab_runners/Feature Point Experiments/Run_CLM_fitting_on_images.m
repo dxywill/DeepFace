@@ -46,7 +46,7 @@ command = cat(2, command, [' -mloc ' model ' ']);
 command = cat(2, command, [' -multi_view ' num2str(multi_view) ' ']);
    
 tic
-for i=1:numel(dataset_dirs)
+parfor i=1:numel(dataset_dirs)
 
     input_loc = ['-fdir "', dataset_dirs{i}, '" '];
     command_c = cat(2, command, input_loc);
