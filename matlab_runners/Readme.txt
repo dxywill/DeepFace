@@ -39,7 +39,9 @@ run_yt_dataset.m run the CLNF model on the YTCeleb Database (https://sites.googl
 
 ======================== Action Unit Experiments ============================
 
-Evaluating our Facial Action Unit detection system on DISFA. As the models were partly trained on DISFA the results might not generalise across datasets. However, this demonstrates how AU prediction can be done with our system.
+Evaluating our Facial Action Unit detection system on DISFA, FERA2011 and SEMAINE datasets.
+
+As the models were partially trained/validated on DISFA, FERA2011, BP4D, UNBC, Bosphorus, and SEMAINE datasets the results might not generalise across datasets. However, this demonstrates how AU prediction can be done with our system.
 
 ======================== Gaze Experiments ============================
 

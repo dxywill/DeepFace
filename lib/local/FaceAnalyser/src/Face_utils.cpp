@@ -221,19 +221,19 @@ namespace FaceAnalysis
 		destination_landmarks.col(1) = destination_landmarks.col(1) + warp_matrix(1,2);
 		
 		// Move the eyebrows up to include more of upper face
-		destination_landmarks.at<double>(0,1) -= 15; 
-		destination_landmarks.at<double>(16,1) -= 15; 
+		destination_landmarks.at<double>(0,1) -= 30; 
+		destination_landmarks.at<double>(16,1) -= 30;
 
-		destination_landmarks.at<double>(17,1) -= 7; 
-		destination_landmarks.at<double>(18,1) -= 7; 
-		destination_landmarks.at<double>(19,1) -= 7; 
-		destination_landmarks.at<double>(20,1) -= 7; 
-		destination_landmarks.at<double>(21,1) -= 7; 
-		destination_landmarks.at<double>(22,1) -= 7; 
-		destination_landmarks.at<double>(23,1) -= 7; 
-		destination_landmarks.at<double>(24,1) -= 7; 
-		destination_landmarks.at<double>(25,1) -= 7; 
-		destination_landmarks.at<double>(26,1) -= 7; 
+		destination_landmarks.at<double>(17,1) -= 30;
+		destination_landmarks.at<double>(18,1) -= 30;
+		destination_landmarks.at<double>(19,1) -= 30;
+		destination_landmarks.at<double>(20,1) -= 30;
+		destination_landmarks.at<double>(21,1) -= 30;
+		destination_landmarks.at<double>(22,1) -= 30;
+		destination_landmarks.at<double>(23,1) -= 30;
+		destination_landmarks.at<double>(24,1) -= 30;
+		destination_landmarks.at<double>(25,1) -= 30;
+		destination_landmarks.at<double>(26,1) -= 30;
 
 		destination_landmarks = cv::Mat(destination_landmarks.t()).reshape(1, 1).t();
 
@@ -249,7 +249,7 @@ namespace FaceAnalysis
 
 		for(size_t i = 0; i < aligned_face_channels.size(); ++i)
 		{
-			aligned_face_channels[i] = aligned_face_channels[i].mul(paw.pixel_mask);
+			cv::multiply(aligned_face_channels[i], paw.pixel_mask, aligned_face_channels[i], 1.0, CV_8U);
 		}
 
 		if(aligned_face.channels() == 3)

@@ -64,7 +64,13 @@ using namespace FaceAnalysis;
 
 void SVR_dynamic_lin_regressors::Read(std::ifstream& stream, const std::vector<std::string>& au_names)
 {
+	
+	// For person specific calibration in a video
+	double cutoff;
+	stream.read((char*)&cutoff, 8);
+	cutoffs.push_back(cutoff);
 
+	// The feature normalization using the mean
 	if(this->means.empty())
 	{
 		LandmarkDetector::ReadMatBin(stream, this->means);
@@ -115,7 +121,6 @@ void SVR_dynamic_lin_regressors::Predict(std::vector<double>& predictions, std::
 {
 	if(AU_names.size() > 0)
 	{
-
 		cv::Mat_<double> preds;
 		if(fhog_descriptor.cols ==  this->means.cols)
 		{
@@ -136,7 +141,7 @@ void SVR_dynamic_lin_regressors::Predict(std::vector<double>& predictions, std::
 		{		
 			predictions.push_back(*pred_it);
 		}
-
+		
 		names = this->AU_names;
 	}
 }

@@ -10,7 +10,7 @@ if(~exist(out_loc, 'dir'))
 end
 
 executable = '"../../x64/Release/FeatureExtraction.exe"';
-
+%%
 parfor f1=1:numel(devel_recs)
 
 
@@ -95,22 +95,9 @@ for i=1:numel(devel_recs)
 end
 
 %%
-f = fopen('SEMAINE_valid_res.txt', 'w');
+f = fopen('results/SEMAINE_valid_res.txt', 'w');
+f1s = zeros(1, numel(aus_SEMAINE));
 for au = 1:numel(aus_SEMAINE)
-
-    if(inds_au_int(au) ~= 0)
-        tp = sum(labels_gt(:,au) == 1 & preds_all_int(:, inds_au_int(au)) >= 1);
-        fp = sum(labels_gt(:,au) == 0 & preds_all_int(:, inds_au_int(au)) >= 1);
-        fn = sum(labels_gt(:,au) == 1 & preds_all_int(:, inds_au_int(au)) < 1);
-        tn = sum(labels_gt(:,au) == 0 & preds_all_int(:, inds_au_int(au)) < 1);
-
-        precision = tp./(tp+fp);
-        recall = tp./(tp+fn);
-
-        f1 = 2 * precision .* recall ./ (precision + recall);
-
-        fprintf(f, 'AU%d intensity, Precision - %.3f, Recall - %.3f, F1 - %.3f\n', aus_SEMAINE(au), precision, recall, f1);
-    end
     
     if(inds_au_class(au) ~= 0)
         tp = sum(labels_gt(:,au) == 1 & preds_all_class(:, inds_au_class(au)) == 1);
@@ -122,7 +109,7 @@ for au = 1:numel(aus_SEMAINE)
         recall = tp./(tp+fn);
 
         f1 = 2 * precision .* recall ./ (precision + recall);
-
+        f1s(au) = f1;
         fprintf(f, 'AU%d class, Precision - %.3f, Recall - %.3f, F1 - %.3f\n', aus_SEMAINE(au), precision, recall, f1);
     end    
     

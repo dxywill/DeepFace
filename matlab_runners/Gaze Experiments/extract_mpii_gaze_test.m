@@ -5,6 +5,8 @@ curr_dir = cd('.');
 % Replace this with your downloaded 300-W train data
 if(exist([getenv('USERPROFILE') '/Dropbox/AAM/eye_clm/mpii_data/'], 'file'))
     database_root = [getenv('USERPROFILE') '/Dropbox/AAM/eye_clm/mpii_data/'];    
+elseif(exist('D:\Dropbox/Dropbox/AAM/eye_clm/mpii_data/', 'file'))
+    database_root = 'D:\Dropbox/Dropbox/AAM/eye_clm/mpii_data/';    
 else
     fprintf('MPII gaze dataset not found\n');
 end

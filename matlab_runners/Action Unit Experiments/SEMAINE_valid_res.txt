@@ -1,7 +1,0 @@
-AU2 intensity, Precision - 0.454, Recall - 0.462, F1 - 0.458
-AU12 intensity, Precision - 0.510, Recall - 0.393, F1 - 0.444
-AU12 class, Precision - 0.406, Recall - 0.828, F1 - 0.545
-AU17 intensity, Precision - 0.394, Recall - 0.392, F1 - 0.393
-AU25 intensity, Precision - 0.342, Recall - 0.768, F1 - 0.473
-AU28 class, Precision - 0.613, Recall - 0.500, F1 - 0.551
-AU45 class, Precision - 0.300, Recall - 0.636, F1 - 0.408

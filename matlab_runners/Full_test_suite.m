@@ -24,13 +24,21 @@ cd('../');
 %% AUs
 cd('Action Unit Experiments');
 run_AU_prediction_DISFA
-assert(mean(au_res) > 0.6);
+assert(mean(au_res) > 0.7);
+
+run_AU_prediction_SEMAINE
+assert(mean(f1s) > 0.42);
+
+run_AU_prediction_FERA2011
+assert(mean(au_res) > 0.5);
+
 cd('../');
 
 %% Gaze
 cd('Gaze Experiments');
 extract_mpii_gaze_test
-assert(median_error < 9.5)
+assert(mean_error < 9.5)
+assert(median_error < 9.0)
 cd('../');
 
 %% Demos

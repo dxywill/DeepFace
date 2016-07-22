@@ -632,12 +632,6 @@ bool CLNF::DetectLandmarks(const cv::Mat_<uchar> &image, const cv::Mat_<float> &
 					// Do the actual landmark detection
 					hierarchical_models[part_model].DetectLandmarks(image, depth, hierarchical_params[part_model]);
 
-					// Reincorporate the models into main tracker
-					for (size_t mapping_ind = 0; mapping_ind < mappings.size(); ++mapping_ind)
-					{
-						detected_landmarks.at<double>(mappings[mapping_ind].first) = hierarchical_models[part_model].detected_landmarks.at<double>(mappings[mapping_ind].second);
-						detected_landmarks.at<double>(mappings[mapping_ind].first + pdm.NumberOfPoints()) = hierarchical_models[part_model].detected_landmarks.at<double>(mappings[mapping_ind].second + hierarchical_models[part_model].pdm.NumberOfPoints());
-					}
 				}
 				else
 				{
@@ -650,9 +644,28 @@ bool CLNF::DetectLandmarks(const cv::Mat_<uchar> &image, const cv::Mat_<float> &
 		// Recompute main model based on the fit part models
 		if(parts_used)
 		{
+
+			for (int part_model = 0; part_model < hierarchical_models.size(); ++part_model)
+			{
+				vector<pair<int, int>> mappings = this->hierarchical_mapping[part_model];
+
+				if (!((hierarchical_model_names[part_model].compare("right_eye_28") == 0 ||
+					hierarchical_model_names[part_model].compare("left_eye_28") == 0)
+					&& !params.track_gaze))
+				{
+					// Reincorporate the models into main tracker
+					for (size_t mapping_ind = 0; mapping_ind < mappings.size(); ++mapping_ind)
+					{
+						detected_landmarks.at<double>(mappings[mapping_ind].first) = hierarchical_models[part_model].detected_landmarks.at<double>(mappings[mapping_ind].second);
+						detected_landmarks.at<double>(mappings[mapping_ind].first + pdm.NumberOfPoints()) = hierarchical_models[part_model].detected_landmarks.at<double>(mappings[mapping_ind].second + hierarchical_models[part_model].pdm.NumberOfPoints());
+					}
+				}
+			}
+
 			pdm.CalcParams(params_global, params_local, detected_landmarks);		
 			pdm.CalcShape2D(detected_landmarks, params_local, params_global);
 		}
+
 	}
 
 	// Check detection correctness

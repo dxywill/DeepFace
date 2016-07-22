@@ -6,7 +6,7 @@ curr_dir = cd('.');
 if(exist([getenv('USERPROFILE') '/Dropbox/AAM/test data/'], 'file'))
     database_root = [getenv('USERPROFILE') '/Dropbox/AAM/test data/'];    
 else
-    database_root = 'F:/Dropbox/Dropbox/AAM/test data/';
+    database_root = 'D:/Dropbox/Dropbox/AAM/test data/';
 end
 
 %% Run using CLNF in the wild model

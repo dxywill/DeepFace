@@ -188,26 +188,64 @@ void write_out_pose_landmarks(const string& outfeatures, const cv::Mat_<double>&
 	}
 }
 
-void write_out_landmarks(const string& outfeatures, const LandmarkDetector::CLNF& clnf_model)
+void write_out_landmarks(const string& outfeatures, const LandmarkDetector::CLNF& clnf_model, const cv::Vec6d& pose, const cv::Point3f& gaze0, const cv::Point3f& gaze1, std::vector<std::pair<std::string, double>> au_intensities, std::vector<std::pair<std::string, double>> au_occurences)
 {
 	create_directory_from_file(outfeatures);
 	std::ofstream featuresFile;
-	featuresFile.open(outfeatures);		
+	featuresFile.open(outfeatures);
 
-	if(featuresFile.is_open())
-	{	
+	if (featuresFile.is_open())
+	{
 		int n = clnf_model.patch_experts.visibilities[0][0].rows;
 		featuresFile << "version: 1" << endl;
 		featuresFile << "npoints: " << n << endl;
 		featuresFile << "{" << endl;
-		
-		for (int i = 0; i < n; ++ i)
+
+		for (int i = 0; i < n; ++i)
 		{
 			// Use matlab format, so + 1
-			featuresFile << clnf_model.detected_landmarks.at<double>(i) + 1 << " " << clnf_model.detected_landmarks.at<double>(i+n) + 1 << endl;
+			featuresFile << clnf_model.detected_landmarks.at<double>(i) + 1 << " " << clnf_model.detected_landmarks.at<double>(i + n) + 1 << endl;
 		}
-		featuresFile << "}" << endl;		
+		featuresFile << "}" << endl;
 
+		// Do the pose and eye gaze if present as well
+		featuresFile << "pose: eul_x, eul_y, eul_z: " << endl;
+		featuresFile << "{" << endl;
+		featuresFile << pose[3] << " " << pose[4] << " " << pose[5] << endl;
+		featuresFile << "}" << endl;
+
+		// Do the pose and eye gaze if present as well
+		featuresFile << "gaze: dir_x_1, dir_y_1, dir_z_1, dir_x_2, dir_y_2, dir_z_2: " << endl;
+		featuresFile << "{" << endl;
+		featuresFile << gaze0.x << " " << gaze0.y << " " << gaze0.z << " " << gaze1.x << " " << gaze1.y << " " << gaze1.z << endl;
+		featuresFile << "}" << endl;
+
+		// Do the au intensities
+		featuresFile << "au intensities: " << au_intensities.size() << endl;
+		featuresFile << "{" << endl;
+
+		for (int i = 0; i < au_intensities.size(); ++i)
+		{
+			// Use matlab format, so + 1
+			featuresFile << au_intensities[i].first << " " << au_intensities[i].second << endl;
+		}
+
+		featuresFile << "}" << endl;
+
+		// Do the au occurences
+		featuresFile << "au occurences: " << au_occurences.size() << endl;
+		featuresFile << "{" << endl;
+
+		for (int i = 0; i < au_occurences.size(); ++i)
+		{
+			// Use matlab format, so + 1
+			featuresFile << au_occurences[i].first << " " << au_occurences[i].second << endl;
+		}
+
+		featuresFile << "}" << endl;
+
+
+		featuresFile.close();
 	}
 }
 
@@ -315,6 +353,45 @@ int main (int argc, char **argv)
 	cv::CascadeClassifier classifier(det_parameters.face_detector_location);
 	dlib::frontal_face_detector face_detector_hog = dlib::get_frontal_face_detector();
 
+	// Loading the AU prediction models
+	string au_loc = "AU_predictors/AU_all_static.txt";
+
+	if (!boost::filesystem::exists(boost::filesystem::path(au_loc)))
+	{
+		boost::filesystem::path loc = boost::filesystem::path(arguments[0]).parent_path() / au_loc;
+
+		if (boost::filesystem::exists(loc))
+		{
+			au_loc = loc.string();
+		}
+		else
+		{
+			cout << "Can't find AU prediction files, exiting" << endl;
+			return 0;
+		}
+	}
+
+	// Used for image masking for AUs
+	string tri_loc;
+	if (boost::filesystem::exists(boost::filesystem::path("model/tris_68_full.txt")))
+	{
+		std::ifstream triangulation_file("model/tris_68_full.txt");
+		tri_loc = "model/tris_68_full.txt";
+	}
+	else
+	{
+		boost::filesystem::path loc = boost::filesystem::path(arguments[0]).parent_path() / "model/tris_68_full.txt";
+		tri_loc = loc.string();
+
+		if (!exists(loc))
+		{
+			cout << "Can't find triangulation files, exiting" << endl;
+			return 0;
+		}
+	}
+
+	FaceAnalysis::FaceAnalyser face_analyser(vector<cv::Vec3d>(), 0.7, 112, 112, au_loc, tri_loc);
+
 	bool visualise = !det_parameters.quiet_mode;
 
 	// Do some image loading
@@ -396,6 +473,8 @@ int main (int argc, char **argv)
 
 				}
 
+				auto ActionUnits = face_analyser.PredictStaticAUs(read_image, clnf_model, false);
+
 				// Writing out the detected landmarks (in an OS independent manner)
 				if(!output_landmark_locations.empty())
 				{
@@ -412,7 +491,7 @@ int main (int argc, char **argv)
 					boost::filesystem::path fname = out_feat_path.filename().replace_extension("");
 					boost::filesystem::path ext = out_feat_path.extension();
 					string outfeatures = dir.string() + preferredSlash + fname.string() + string(name) + ext.string();
-					write_out_landmarks(outfeatures, clnf_model);
+					write_out_landmarks(outfeatures, clnf_model, headPose, gazeDirection0, gazeDirection1, ActionUnits.first, ActionUnits.second);
 				}
 
 				if (!output_pose_locations.empty())
@@ -503,11 +582,13 @@ int main (int argc, char **argv)
 				FaceAnalysis::EstimateGaze(clnf_model, gazeDirection1, fx, fy, cx, cy, false);
 			}
 
+			auto ActionUnits = face_analyser.PredictStaticAUs(read_image, clnf_model, false);
+
 			// Writing out the detected landmarks
 			if(!output_landmark_locations.empty())
 			{
 				string outfeatures = output_landmark_locations.at(i);
-				write_out_landmarks(outfeatures, clnf_model);
+				write_out_landmarks(outfeatures, clnf_model, headPose, gazeDirection0, gazeDirection1, ActionUnits.first, ActionUnits.second);
 			}
 
 			// Writing out the detected landmarks
