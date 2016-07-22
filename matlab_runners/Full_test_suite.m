@@ -30,7 +30,7 @@ run_AU_prediction_SEMAINE
 assert(mean(f1s) > 0.42);
 
 run_AU_prediction_FERA2011
-assert(mean(f1s) > 0.5);
+assert(mean(au_res) > 0.5);
 
 cd('../');
 
