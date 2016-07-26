@@ -13,6 +13,17 @@ compiler:
 os:
 - linux
   
+# Install packages differs for container-based infrastructure
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - cmake
+
+      # https://github.com/travis-ci-tester/travis-test-gcc-cxx-11
+      - g++-4.9 
+  
 before_install:
   - sudo apt-get update
   - sudo apt-get install build-essential
