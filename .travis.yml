@@ -1,3 +1,6 @@
+# Use new trusty images, should yield newer compilers and packages
+sudo: required
+dist: precise
 language: cpp
 
 branches:
@@ -5,29 +8,7 @@ branches:
     - master
     - develop
     - feature-travis
-
-os:
-- linux
  
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install build-essential
-  
-install:
-  - sudo apt-get install git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
-  - sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev checkinstall
-  - sudo apt-get install libboost-all-dev
-  
-before_script:
-  - git clone https://github.com/Itseez/opencv.git
-  - cd opencv
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make -j4
-  - sudo make -j4 install
-  - cd ../..
-
 matrix:
   include:
     - compiler: gcc
@@ -48,6 +29,25 @@ matrix:
             - clang-3.7
       env: COMPILER=clang++-3.7  
   
+ before_install:
+  - sudo apt-get update
+  - sudo apt-get install build-essential
+  
+install:
+  - sudo apt-get install git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+  - sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev checkinstall
+  - sudo apt-get install libboost-all-dev
+  
+before_script:
+  - git clone https://github.com/Itseez/opencv.git
+  - cd opencv
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make -j4
+  - sudo make -j4 install
+  - cd ../..
+
 script:
   - mkdir build
   - cd build
