@@ -28,13 +28,13 @@ before_install:
       fi
     fi
 
-  - sudo apt-get update -qq
+  - if [[ ${TRAVIS_OS_NAME} = linux ]]; then sudo apt-get update -qq; fi
   
 install:
-  - if [ ["$CXX" == "g++"] && [ ${TRAVIS_OS_NAME} = linux ]]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ ["$CXX" == "g++"] && [ ${TRAVIS_OS_NAME} = linux ]]; then export CXX="g++-4.8"; fi        
-  - if [ ["$CXX" == "clang++"] && [ ${TRAVIS_OS_NAME} = linux ]]; then sudo apt-get install -qq clang-3.4; fi
-  - if [ ["$CXX" == "clang++"] && [ ${TRAVIS_OS_NAME} = linux ]]; then export CXX="clang++-3.4"; fi
+  - if ["$CXX" == "g++"]; then if [[ ${TRAVIS_OS_NAME} = linux ]]; then sudo apt-get install -qq g++-4.8; fi fi
+  - if ["$CXX" == "g++"]; then if [[ ${TRAVIS_OS_NAME} = linux ]]; then export CXX="g++-4.8"; fi fi 
+  - if ["$CXX" == "clang++"]; then if [[ ${TRAVIS_OS_NAME} = linux ]]; then sudo apt-get install -qq clang-3.4; fi fi
+  - if ["$CXX" == "clang++"]; then if [[ ${TRAVIS_OS_NAME} = linux ]]; then export CXX="clang++-3.4"; fi fi
 
   - if [[ ${TRAVIS_OS_NAME} = linux ]]; then sudo apt-get install git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev; fi
   - if [[ ${TRAVIS_OS_NAME} = linux ]]; then sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev checkinstall; fi
