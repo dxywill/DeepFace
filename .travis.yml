@@ -8,6 +8,10 @@ branches:
 compiler:
   - gcc
   - clang
+
+os:
+  - osx
+  - linux  
   
 before_install:
   # g++4.8.1
