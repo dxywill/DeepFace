@@ -64,4 +64,5 @@ script:
   - cd build
   - cmake -D CMAKE_BUILD_TYPE=RELEASE .. 
   - make -j2
-  - ./bin/FaceLandmarkImg -fdir "../videos/" -ofdir "./demo_img/" -oidir "./demo_img/" -wild -q
+  - cd ../tests
+  - ./tests.sh

@@ -1,0 +1,15 @@
+version: 1.0.{build}
+branches:
+  only:
+  - develop
+  - master
+  - feature-travis
+configuration:
+- Debug
+- Release
+platform:
+- x64
+- x86
+build:
+  project: OpenFace.sln
+  verbosity: minimal

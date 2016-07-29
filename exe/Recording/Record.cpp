@@ -168,7 +168,10 @@ int main (int argc, char **argv)
 	INFO_STREAM( "Attempting to capture from device: " << device );
 	vCap = cv::VideoCapture( device );
 
-	if( !vCap.isOpened() ) FATAL_STREAM( "Failed to open video source" );
+	if (!vCap.isOpened()) {
+		FATAL_STREAM("Failed to open video source");
+		return 1;
+	}
 	
 	cv::Mat img;
 	vCap >> img;

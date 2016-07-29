@@ -219,7 +219,11 @@ int main (int argc, char **argv)
 			video_capture >> captured_image;
 		}
 
-		if( !video_capture.isOpened() ) FATAL_STREAM( "Failed to open video source" );
+		if (!video_capture.isOpened())
+		{
+			FATAL_STREAM("Failed to open video source");
+			return 1;
+		}
 		else INFO_STREAM( "Device or file opened");
 
 		cv::Mat captured_image;
