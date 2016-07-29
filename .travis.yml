@@ -65,4 +65,4 @@ script:
   - cmake -D CMAKE_BUILD_TYPE=RELEASE .. 
   - make -j2
   - cd ../tests
-  - ./tests.sh
+  - sudo ./tests.sh
