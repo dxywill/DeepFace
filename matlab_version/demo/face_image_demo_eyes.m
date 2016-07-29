@@ -9,22 +9,30 @@ addpath('../CCNF/');
    
 [clmParams, pdm] = Load_CLM_params_wild();
 
-[clmParams_eye, pdm_eye] = Load_CLM_params_eye();
-
 % An accurate CCNF (or CLNF) model
 % [patches] = Load_Patch_Experts( '../models/general/', 'ccnf_patches_*_general.mat', [], [], clmParams);
 % A simpler (but less accurate SVR)
 [patches] = Load_Patch_Experts( '../models/general/', 'svr_patches_*_general.mat', [], [], clmParams);
 
-[patches_eye] = Load_Patch_Experts( 'C:\Users\Tadas\Dropbox\AAM\patch_experts_eyes\svr_training\trained/', 'svr_patches_*_synth.mat', [], [], clmParams);
+% Loading eye PDM and patch experts
+[clmParams_eye, pdm_right_eye, pdm_left_eye] = Load_CLM_params_eye_28();
+[patches_right_eye] = Load_Patch_Experts( '../models/hierarch/', 'ccnf_patches_*_synth_right_eye.mat', [], [], clmParams_eye);
+[patches_left_eye] = Load_Patch_Experts( '../models/hierarch/', 'ccnf_patches_*_synth_left_eye.mat', [], [], clmParams_eye);
+clmParams_eye.multi_modal_types  = patches_right_eye(1).multi_modal_types;
+right_eye_inds = [43,44,45,46,47,48];
+left_eye_inds = [37,38,39,40,41,42];
+
+right_eye_inds_synth = [9 11 13 15 17 19];
+left_eye_inds_synth = [9 11 13 15 17 19];
 
 clmParams.multi_modal_types  = patches(1).multi_modal_types;
 
-clmParams_eye.multi_modal_types  = patches_eye(1).multi_modal_types;
-
 %%
-root_dir = 'C:\Users\Tadas\Dropbox\AAM\test data\gaze_original\p00/';
-images = dir([root_dir, '*.jpg']);
+% root_dir = 'C:\Users\Tadas\Dropbox\AAM\test data\gaze_original\p00/';
+% images = dir([root_dir, '*.jpg']);
+
+root_dir = './sample_eye_imgs/';
+images = dir([root_dir, '/*.png']);
 
 verbose = true;
 
@@ -83,43 +91,36 @@ for img=1:numel(images)
         
         % shape correction for matlab format
         shape = shape + 1;
+              
+        % Perform eye fitting now
+        shape_r_eye = zeros(numel(pdm_right_eye.M)/3, 2);
+        shape_r_eye(right_eye_inds_synth,:) = shape(right_eye_inds, :);
 
-        if(verbose)
+        [ a, R, T, ~, l_params] = fit_PDM_ortho_proj_to_2D(pdm_right_eye.M, pdm_right_eye.E, pdm_right_eye.V, shape_r_eye);
 
-            % valid points to draw (not to draw self-occluded ones)
-            v_points = logical(patches(1).visibilities(view_used,:));
+        bbox = [min(shape_r_eye(:,1)), min(shape_r_eye(:,2)), max(shape_r_eye(:,1)), max(shape_r_eye(:,2))];
 
-            try
-
-            plot(shape(v_points,1), shape(v_points',2),'.r','MarkerSize',20);
-            plot(shape(v_points,1), shape(v_points',2),'.b','MarkerSize',10);
-
-            catch warn
-
-            end
-        end
-        
-        % Map from detected landmarks to eye params
-        shape_r_eye = zeros(20,2);
-        shape_r_eye([9,11,13,15,17,19],:) = shape([43,44,45,46,47,48], :);
-        
-        [ a, R, T, ~, params, err, shapeOrtho] = fit_PDM_ortho_proj_to_2D(pdm_eye.M, pdm_eye.E, pdm_eye.V, shape_r_eye);
-            
         g_param = [a; Rot2Euler(R)'; T];
-        l_param = params;
 
-        % Use the initial global and local params for clm fitting in the image
-        patches_eye(1).visibilities(1:8) = 0;
-        patches_eye(2).visibilities(1:8) = 0;
-        patches_eye(3).visibilities(1:8) = 0;
-        [shape_eye,~,~,lhood,lmark_lhood,view_used] = Fitting_from_bb(image, [], bbox, pdm_eye, patches_eye, clmParams_eye, 'gparam', g_param, 'lparam', l_param);
+        [shape_r_eye] = Fitting_from_bb(image, [], bbox, pdm_right_eye, patches_right_eye, clmParams_eye, 'gparam', g_param, 'lparam', l_params);
 
-        plot(shape_eye(:,1), shape_eye(:,2), '.g', 'MarkerSize',15);
-%         % Now do the eyes
-%         min_x = shape(43,1);
-%         max_x = shape(43,1);
-%         bbox_eye = shape(43,1)
-        
+        % Perform eye fitting now 
+        shape_l_eye = zeros(numel(pdm_right_eye.M)/3, 2);        
+        shape_l_eye(left_eye_inds_synth,:) = shape(left_eye_inds, :);
+
+        [ a, R, T, ~, l_params] = fit_PDM_ortho_proj_to_2D(pdm_left_eye.M, pdm_left_eye.E, pdm_left_eye.V, shape_l_eye);
+
+        bbox = [min(shape_l_eye(:,1)), min(shape_l_eye(:,2)), max(shape_l_eye(:,1)), max(shape_l_eye(:,2))];
+
+        g_param = [a; Rot2Euler(R)'; T];
+
+        [shape_l_eye] = Fitting_from_bb(image, [], bbox, pdm_left_eye, patches_left_eye, clmParams_eye, 'gparam', g_param, 'lparam', l_params);
+
+        plot(shape_l_eye(9:20,1), shape_l_eye(9:20,2), '.g', 'MarkerSize',15);
+        plot(shape_l_eye(1:8,1), shape_l_eye(1:8,2), '.b', 'MarkerSize',15);
+
+        plot(shape_r_eye(9:20,1), shape_r_eye(9:20,2), '.g', 'MarkerSize',15);
+        plot(shape_r_eye(1:8,1), shape_r_eye(1:8,2), '.b', 'MarkerSize',15);
     end
     hold off;
     
