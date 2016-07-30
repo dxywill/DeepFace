@@ -13,8 +13,7 @@ platform:
 build:
   project: OpenFace.sln
   verbosity: minimal
-
- test_script:
+test_script:
 # C++  
   - cmd: dir
   - cmd: if exist x64 (cd x64)
