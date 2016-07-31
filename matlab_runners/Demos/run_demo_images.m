@@ -1,6 +1,6 @@
 clear
 
-clm_exe = '"../../x64/Release/FaceLandmarkImg.exe"';
+executable = '"../../x64/Release/FaceLandmarkImg.exe"';
     
 in_dir  = '../../videos/';
 out_dir = './demo_img/';
@@ -22,7 +22,7 @@ model = 'model/main_clnf_general.txt';
 % Trained on in-the-wild
 %model = 'model/main_clnf_wild.txt';
 
-command = clm_exe;
+command = executable;
 
 command = cat(2, command, [' -fdir "' in_dir '"']);
 

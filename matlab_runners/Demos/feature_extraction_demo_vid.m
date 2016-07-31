@@ -1,4 +1,4 @@
-clm_exe = '"../../x64/Release/FeatureExtraction.exe"';
+executable = '"../../x64/Release/FeatureExtraction.exe"';
 
 output = './output_features_vid/';
 
@@ -10,8 +10,7 @@ in_files = dir('../../videos/1815_01_008_tony_blair.avi');
 % some parameters
 verbose = true;
 
-command = clm_exe;
-command = cat(2, command, ' -rigid ');
+command = executable;
 
 % Remove for a speedup
 command = cat(2, command, ' -verbose ');

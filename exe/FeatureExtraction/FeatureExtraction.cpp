@@ -153,9 +153,8 @@ void create_directory(string output_path)
 }
 
 void get_output_feature_params(vector<string> &output_similarity_aligned, vector<string> &output_hog_aligned_files, double &similarity_scale,
-	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose, bool& dynamic,
-	bool &output_2D_landmarks, bool &output_3D_landmarks, bool &output_model_params, bool &output_pose, bool &output_AUs, bool &output_gaze,
-	vector<string> &arguments);
+	int &similarity_size, bool &grayscale, bool& verbose, bool& dynamic, bool &output_2D_landmarks, bool &output_3D_landmarks,
+	bool &output_model_params, bool &output_pose, bool &output_AUs, bool &output_gaze, vector<string> &arguments);
 
 void get_image_input_output_params_feats(vector<vector<string> > &input_image_files, bool& as_video, vector<string> &arguments);
 
@@ -305,7 +304,6 @@ int main (int argc, char **argv)
 	int sim_size = 112;
 	bool grayscale = false;	
 	bool video_output = false;
-	bool rigid = false;	
 	bool dynamic = true; // Indicates if a dynamic AU model should be used (dynamic is useful if the video is long enough to include neutral expressions)
 	int num_hog_rows;
 	int num_hog_cols;
@@ -319,7 +317,7 @@ int main (int argc, char **argv)
 	bool output_AUs = true;
 	bool output_gaze = true;
 
-	get_output_feature_params(output_similarity_align, output_hog_align_files, sim_scale, sim_size, grayscale, rigid, verbose, dynamic,
+	get_output_feature_params(output_similarity_align, output_hog_align_files, sim_scale, sim_size, grayscale, verbose, dynamic,
 		output_2D_landmarks, output_3D_landmarks, output_model_params, output_pose, output_AUs, output_gaze, arguments);
 	
 	// Used for image masking
@@ -1022,7 +1020,7 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 
 
 void get_output_feature_params(vector<string> &output_similarity_aligned, vector<string> &output_hog_aligned_files, double &similarity_scale,
-	int &similarity_size, bool &grayscale, bool &rigid, bool& verbose, bool& dynamic,
+	int &similarity_size, bool &grayscale, bool& verbose, bool& dynamic,
 	bool &output_2D_landmarks, bool &output_3D_landmarks, bool &output_model_params, bool &output_pose, bool &output_AUs, bool &output_gaze,
 	vector<string> &arguments)
 {
@@ -1036,7 +1034,6 @@ void get_output_feature_params(vector<string> &output_similarity_aligned, vector
 		valid[i] = true;
 	}
 
-	string input_root = "";
 	string output_root = "";
 
 	// By default the model is dynamic
@@ -1047,13 +1044,7 @@ void get_output_feature_params(vector<string> &output_similarity_aligned, vector
 	{
 		if (arguments[i].compare("-root") == 0)
 		{
-			input_root = arguments[i + 1];
 			output_root = arguments[i + 1];
-			i++;
-		}
-		if (arguments[i].compare("-inroot") == 0)
-		{
-			input_root = arguments[i + 1];
 			i++;
 		}
 		if (arguments[i].compare("-outroot") == 0)
@@ -1084,10 +1075,6 @@ void get_output_feature_params(vector<string> &output_similarity_aligned, vector
 		else if (arguments[i].compare("-verbose") == 0)
 		{
 			verbose = true;
-		}
-		else if (arguments[i].compare("-rigid") == 0)
-		{
-			rigid = true;
 		}
 		else if (arguments[i].compare("-au_static") == 0)
 		{

@@ -1,4 +1,4 @@
-function [meanError, all_rot_preds, all_rot_gts, meanErrors, all_errors, rels_all] = calcBiwiError(resDir, gtDir)
+function [meanError, all_rot_preds, all_rot_gts, meanErrors, all_errors, rels_all, seq_ids] = calcBiwiError(resDir, gtDir)
 
 seqNames = {'01','02','03','04','05','06','07','08','09', ...
     '10', '11','12','13','14','15','16','17','18','19', ...
@@ -10,7 +10,8 @@ rot = cell(1,numel(seqNames));
 rotg = cell(1,numel(seqNames));
 rels_all = [];
 
-tic;
+seq_ids = {};
+
 for i=1:numel(seqNames)
         
     posesGround =  load ([gtDir '/' seqNames{i} '/groundTruthPose.txt']);
@@ -49,6 +50,9 @@ for i=1:numel(seqNames)
     
     rotMeanErr(i,:) = mean(abs((rot{i}(:,:)-rotg{i}(:,:))));
     rotRMS(i,:) = sqrt(mean(((rot{i}(:,:)-rotg{i}(:,:))).^2)); 
+    
+    seq_ids = cat(1, seq_ids, repmat(seqNames(i), size(rot{i},1), 1));
+    
 end
 %%
 meanErrors = rotMeanErr;

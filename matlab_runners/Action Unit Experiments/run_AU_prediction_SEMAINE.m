@@ -20,7 +20,7 @@ parfor f1=1:numel(devel_recs)
 
         f1_dir = devel_recs{f1};
 
-        command = [executable, ' -fx 800 -fy 800 -rigid -q -no2Dfp -no3Dfp -noMparams -noPose -noGaze '];
+        command = [executable, ' -fx 800 -fy 800 -q -no2Dfp -no3Dfp -noMparams -noPose -noGaze '];
 
         curr_vid = [SEMAINE_dir, f1_dir, '/', vid_file.name];
 

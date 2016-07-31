@@ -1,4 +1,4 @@
-function [meanError, all_rot_preds, all_rot_gts, all_errors, rels_all] = calcBUerror(resDir, gtDir)
+function [meanError, all_rot_preds, all_rot_gts, all_errors, rels_all, seq_ids] = calcBUerror(resDir, gtDir)
 
 seqNames = {'jam1','jam2','jam3','jam4','jam5','jam6','jam7','jam8','jam9', ...
     'jim1','jim2','jim3','jim4','jim5','jim6','jim7','jim8','jim9', ...
@@ -11,6 +11,8 @@ rotRMS = zeros(numel(seqNames),3);
 rot = cell(1,numel(seqNames));
 rotg = cell(1,numel(seqNames));
 rels_all = [];
+
+seq_ids = {};
 
 for i = 1:numel(seqNames)
     
@@ -54,7 +56,7 @@ for i = 1:numel(seqNames)
     
     rotMeanErr(i,:) = mean(abs((rot{i}(:,:)-rotg{i}(:,:))));
     rotRMS(i,:) = sqrt(mean(((rot{i}(:,:)-rotg{i}(:,:))).^2)); 
-    
+    seq_ids = cat(1, seq_ids, repmat(seqNames(i), size(rot{i},1), 1));
 end
 allRot = cell2mat(rot');
 allRotg = cell2mat(rotg');

@@ -115,8 +115,8 @@ void create_directories(string output_path)
 }
 
 // Extracting the following command line arguments -f, -fd, -op, -of, -ov (and possible ordered repetitions)
-void get_video_input_output_params(vector<string> &input_video_files, vector<string> &depth_dirs,
-	vector<string> &output_files, vector<string> &output_video_files, bool& world_coordinates_pose, vector<string> &arguments)
+void get_video_input_output_params(vector<string> &input_video_files, vector<string> &depth_dirs, vector<string> &output_files,
+	vector<string> &output_video_files, bool& world_coordinates_pose, vector<string> &arguments)
 {
 	bool* valid = new bool[arguments.size()];
 
@@ -128,46 +128,58 @@ void get_video_input_output_params(vector<string> &input_video_files, vector<str
 	// By default use rotation with respect to camera (not world coordinates)
 	world_coordinates_pose = false;
 
-	string root = "";
+	string input_root = "";
+	string output_root = "";
+
 	// First check if there is a root argument (so that videos and outputs could be defined more easilly)
 	for(size_t i = 0; i < arguments.size(); ++i)
 	{
-		if (arguments[i].compare("-root") == 0) 
-		{                    
-			root = arguments[i + 1];
-			// Do not discard root as it might be used in other later steps
+		if (arguments[i].compare("-root") == 0)
+		{
+			input_root = arguments[i + 1];
+			output_root = arguments[i + 1];
 			i++;
-		}		
+		}
+		if (arguments[i].compare("-inroot") == 0)
+		{
+			input_root = arguments[i + 1];
+			i++;
+		}
+		if (arguments[i].compare("-outroot") == 0)
+		{
+			output_root = arguments[i + 1];
+			i++;
+		}
 	}
 
 	for(size_t i = 0; i < arguments.size(); ++i)
 	{
 		if (arguments[i].compare("-f") == 0) 
 		{                    
-			input_video_files.push_back(root + arguments[i + 1]);			
+			input_video_files.push_back(input_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i+1] = false;			
 			i++;
 		}		
 		else if (arguments[i].compare("-fd") == 0) 
 		{                    
-			depth_dirs.push_back(root + arguments[i + 1]);
+			depth_dirs.push_back(input_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i+1] = false;		
 			i++;
 		}
 		else if (arguments[i].compare("-of") == 0)
 		{
-			output_files.push_back(root + arguments[i + 1]);
-			create_directory_from_file(root + arguments[i + 1]);
+			output_files.push_back(output_root + arguments[i + 1]);
+			create_directory_from_file(output_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i+1] = false;
 			i++;
 		}
 		else if (arguments[i].compare("-ov") == 0)
 		{
-			output_video_files.push_back(root + arguments[i + 1]);
-			create_directory_from_file(root + arguments[i + 1]);
+			output_video_files.push_back(output_root + arguments[i + 1]);
+			create_directory_from_file(output_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i+1] = false;
 			i++;

@@ -1,4 +1,4 @@
-function [meanError, all_rot_preds, all_rot_gts, meanErrors, all_errors, rels_all] = calcIctError(resDir, gtDir)
+function [meanError, all_rot_preds, all_rot_gts, meanErrors, all_errors, rels_all, seq_ids] = calcIctError(resDir, gtDir)
 %CALCICTERROR Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -12,6 +12,8 @@ function [meanError, all_rot_preds, all_rot_gts, meanErrors, all_errors, rels_al
     rotg = cell(1,numel(sequences));
 
     rels_all = [];
+
+    seq_ids = {};
 
     for i = 1:numel(sequences)
 
@@ -53,7 +55,9 @@ function [meanError, all_rot_preds, all_rot_gts, meanErrors, all_errors, rels_al
         % Now compute the errors
         rotMeanErr(i,:) = mean(abs((rot{i}(:,:)-rotg{i}(:,:))));
         rotRMS(i,:) = sqrt(mean(((rot{i}(:,:)-rotg{i}(:,:))).^2)); 
-        
+            
+        seq_ids = cat(1, seq_ids, repmat({[name 'ict']}, size(rot{i},1), 1));
+            
     end
     allRot = cell2mat(rot');
     allRotg = cell2mat(rotg');

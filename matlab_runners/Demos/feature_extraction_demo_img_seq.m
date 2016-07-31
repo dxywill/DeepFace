@@ -1,4 +1,4 @@
-clm_exe = '"../../x64/Release/FeatureExtraction.exe"';
+executable = '"../../x64/Release/FeatureExtraction.exe"';
 
 output = './output_features_seq/';
 
@@ -10,8 +10,7 @@ in_dirs = {'../../image_sequence'};
 % some parameters
 verbose = true;
 
-command = clm_exe;
-command = cat(2, command, ' -rigid ');
+command = executable;
 
 % Remove for a speedup
 command = cat(2, command, ' -verbose ');

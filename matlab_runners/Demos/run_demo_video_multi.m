@@ -1,4 +1,4 @@
-clm_exe = '"../../x64/Release/FaceLandmarkVidMulti.exe"';
+executable = '"../../x64/Release/FaceLandmarkVidMulti.exe"';
 
 output = './demo_vid/';
 
@@ -20,7 +20,7 @@ model = 'model/main_clnf_general.txt';
 % Trained on in-the-wild
 %model = 'model/main_clnf_wild.txt';
 
-command = clm_exe;
+command = executable;
 command = cat(2, command, [' -mloc "', model, '"']);
 % add all videos to single argument list (so as not to load the model anew
 % for every video)
