@@ -615,15 +615,19 @@ int main (int argc, char **argv)
 				char name[100];
 					
 				// output the frame number
-				std::sprintf(name, "frame_det_%06d.png", frame_count);
+				std::sprintf(name, "frame_det_%06d.jpg", frame_count);
 
 				// Construct the output filename
 				boost::filesystem::path slash("/");
 					
 				std::string preferredSlash = slash.make_preferred().string();
 				
+				vector<int> compression_params;
+				compression_params.push_back(CV_IMWRITE_JPEG_QUALITY);
+				compression_params.push_back(100);
+
 				string out_file = output_similarity_align[f_n] + preferredSlash + string(name);
-				imwrite(out_file, sim_warped_img);
+				imwrite(out_file, sim_warped_img, compression_params);
 
 			}
 
