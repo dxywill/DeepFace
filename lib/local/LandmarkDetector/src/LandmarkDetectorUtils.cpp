@@ -862,7 +862,7 @@ void DrawBox(cv::Mat image, cv::Vec6d pose, cv::Scalar color, int thickness, flo
 		// Only draw the line if one of the points is inside the image
 		if(p1.inside(image_rect) || p2.inside(image_rect))
 		{
-			cv::line(image, p1, p2, color, thickness);
+			cv::line(image, p1, p2, color, thickness, CV_AA);
 		}
 		
 	}
@@ -944,7 +944,7 @@ void DrawBox(vector<pair<cv::Point, cv::Point>> lines, cv::Mat image, cv::Scalar
 		// Only draw the line if one of the points is inside the image
 		if(p1.inside(image_rect) || p2.inside(image_rect))
 		{
-			cv::line(image, p1, p2, color, thickness);
+			cv::line(image, p1, p2, color, thickness, CV_AA);
 		}
 		
 	}
@@ -1033,8 +1033,8 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& vis
 				int thickness = (int)std::ceil(3.0* ((double)img.cols) / 640.0);
 				int thickness_2 = (int)std::ceil(1.0* ((double)img.cols) / 640.0);
 
-				cv::circle(img, featurePoint, 1, cv::Scalar(0,0,255), thickness);
-				cv::circle(img, featurePoint, 1, cv::Scalar(255,0,0), thickness_2);
+				cv::circle(img, featurePoint, 1, cv::Scalar(0,0,255), thickness, CV_AA);
+				cv::circle(img, featurePoint, 1, cv::Scalar(255,0,0), thickness_2, CV_AA);
 			}
 		}
 	}
@@ -1058,9 +1058,9 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& vis
 
 			cv::Point nextFeaturePoint((int)shape2D.at<double>(next_point), (int)shape2D.at<double>(next_point+n));
 			if( i < 8 || i > 19)
-				cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2);
+				cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2, CV_AA);
 			else
-				cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(0, 0, 255), thickness_2);
+				cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(0, 0, 255), thickness_2, CV_AA);
 
 			//cv::circle(img, featurePoint, 1, Scalar(0,255,0), thickness);
 			//cv::circle(img, featurePoint, 1, Scalar(0,0,255), thickness_2);
@@ -1086,7 +1086,7 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& vis
 				next_point = 0;
 
 			cv::Point nextFeaturePoint((int)shape2D.at<double>(next_point), (int)shape2D.at<double>(next_point+n));
-			cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2);
+			cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2, CV_AA);
 		}
 	}
 }
@@ -1121,8 +1121,8 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D)
 		int thickness = (int)std::ceil(5.0* ((double)img.cols) / 640.0);
 		int thickness_2 = (int)std::ceil(1.5* ((double)img.cols) / 640.0);
 
-		cv::circle(img, featurePoint, 1, cv::Scalar(0,0,255), thickness);
-		cv::circle(img, featurePoint, 1, cv::Scalar(255,0,0), thickness_2);
+		cv::circle(img, featurePoint, 1, cv::Scalar(0,0,255), thickness, CV_AA);
+		cv::circle(img, featurePoint, 1, cv::Scalar(255,0,0), thickness_2, CV_AA);
 
 	}
 	
@@ -1155,8 +1155,8 @@ void DrawLandmarks(cv::Mat img, vector<cv::Point> landmarks)
 		int thickness = (int)std::ceil(5.0* ((double)img.cols) / 640.0);
 		int thickness_2 = (int)std::ceil(1.5* ((double)img.cols) / 640.0);
 
-		cv::circle(img, p, 1, cv::Scalar(0,0,255), thickness);
-		cv::circle(img, p, 1, cv::Scalar(255,0,0), thickness_2);
+		cv::circle(img, p, 1, cv::Scalar(0,0,255), thickness, CV_AA);
+		cv::circle(img, p, 1, cv::Scalar(255,0,0), thickness_2, CV_AA);
 	}
 	
 }

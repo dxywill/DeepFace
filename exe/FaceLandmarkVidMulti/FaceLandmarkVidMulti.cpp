@@ -416,7 +416,7 @@ int main (int argc, char **argv)
 			sprintf(fpsC, "%d", (int)fps);
 			string fpsSt("FPS:");
 			fpsSt += fpsC;
-			cv::putText(disp_image, fpsSt, cv::Point(10,20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255,0,0));		
+			cv::putText(disp_image, fpsSt, cv::Point(10,20), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255,0,0), 1, CV_AA);
 			
 			int num_active_models = 0;
 
@@ -432,7 +432,7 @@ int main (int argc, char **argv)
 			sprintf(active_m_C, "%d", num_active_models);
 			string active_models_st("Active models:");
 			active_models_st += active_m_C;
-			cv::putText(disp_image, active_models_st, cv::Point(10,60), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255,0,0));		
+			cv::putText(disp_image, active_models_st, cv::Point(10,60), CV_FONT_HERSHEY_SIMPLEX, 0.5, CV_RGB(255,0,0), 1, CV_AA);
 			
 			if(!det_parameters[0].quiet_mode)
 			{
