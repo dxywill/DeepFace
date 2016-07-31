@@ -19,6 +19,7 @@ test_script:
   - cmd: if exist x64 (cd x64)
   - cmd: if exist Debug (cd Debug)
   - cmd: if exist Release (cd Release)
+  - cmd: dir
   - cmd: if exist "../videos" (FaceLandmarkImg.exe -fdir "../videos/" -ofdir "./demo_img/" -oidir "./demo_img/" -wild -q) else (FaceLandmarkImg.exe -fdir "../../videos/" -ofdir "./demo_img/" -oidir "./demo_img/" -wild -q)
   - cmd: if exist "../videos" (FaceLandmarkVidMulti.exe -f ../videos/multi_face.avi -q) else (FaceLandmarkVidMulti.exe -f ../../videos/multi_face.avi -q)
   - cmd: if exist "../videos" (FeatureExtraction.exe -rigid -verbose -f "../videos/1815_01_008_tony_blair.avi" -of "output_features/1815_01_008_tony_blair.txt" -simalign output_features/aligned -q) else (FeatureExtraction.exe -rigid -verbose -f "../../videos/1815_01_008_tony_blair.avi" -of "output_features/1815_01_008_tony_blair.txt" -simalign output_features/aligned -q)
