@@ -3,7 +3,7 @@ branches:
   only:
   - develop
   - master
-  - feature-travis
+  - feature*
 max_jobs: 4  
 configuration:
 - Debug
