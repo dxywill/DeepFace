@@ -337,7 +337,7 @@ int main (int argc, char **argv)
 		if(!exists(loc))
 		{
 			cout << "Can't find triangulation files, exiting" << endl;
-			return 0;
+			return 1;
 		}
 	}	
 
@@ -378,7 +378,7 @@ int main (int argc, char **argv)
 		else
 		{
 			cout << "Can't find AU prediction files, exiting" << endl;
-			return 0;
+			return 1;
 		}
 	}	
 
@@ -615,7 +615,7 @@ int main (int argc, char **argv)
 				char name[100];
 					
 				// output the frame number
-				std::sprintf(name, "frame_det_%06d.png", frame_count);
+				std::sprintf(name, "frame_det_%06d.bmp", frame_count);
 
 				// Construct the output filename
 				boost::filesystem::path slash("/");

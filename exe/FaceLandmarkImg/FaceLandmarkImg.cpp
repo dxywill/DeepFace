@@ -367,7 +367,7 @@ int main (int argc, char **argv)
 		else
 		{
 			cout << "Can't find AU prediction files, exiting" << endl;
-			return 0;
+			return 1;
 		}
 	}
 
@@ -386,7 +386,7 @@ int main (int argc, char **argv)
 		if (!exists(loc))
 		{
 			cout << "Can't find triangulation files, exiting" << endl;
-			return 0;
+			return 1;
 		}
 	}
 

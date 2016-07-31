@@ -247,6 +247,7 @@ int main (int argc, char **argv)
 			if (!boost::filesystem::exists(current_file))
 			{
 				FATAL_STREAM("File does not exist");
+				return 1;
 			}
 
 			current_file = boost::filesystem::path(current_file).generic_string();
@@ -264,7 +265,11 @@ int main (int argc, char **argv)
 			video_capture >> captured_image;
 		}
 
-		if( !video_capture.isOpened() ) FATAL_STREAM( "Failed to open video source" );
+		if (!video_capture.isOpened())
+		{
+			FATAL_STREAM("Failed to open video source");
+			return 1;
+		}
 		else INFO_STREAM( "Device or file opened");
 
 		cv::Mat captured_image;
