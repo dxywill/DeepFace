@@ -621,8 +621,13 @@ int main (int argc, char **argv)
 				std::string preferredSlash = slash.make_preferred().string();
 				
 				string out_file = output_similarity_align[f_n] + preferredSlash + string(name);
-				imwrite(out_file, sim_warped_img);
-
+				bool write_success = imwrite(out_file, sim_warped_img);
+				
+				if (!write_success)
+				{
+					cout << "Could not output similarity aligned image image" << endl;
+					return 1;
+				}
 			}
 
 			// Visualising the tracker

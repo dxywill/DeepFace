@@ -557,8 +557,14 @@ int main (int argc, char **argv)
 						boost::filesystem::path ext = out_feat_path.extension();
 						outimage = dir.string() + preferredSlash + fname.string() + string(name) + ext.string();
 						create_directory_from_file(outimage);
-						imwrite(outimage, display_image);	
+						bool write_success = cv::imwrite(outimage, display_image);	
 						
+						if (!write_success)
+						{
+							cout << "Could not output a processed image" << endl;
+							return 1;
+						}
+
 					}
 
 				}
@@ -630,7 +636,13 @@ int main (int argc, char **argv)
 				if(!outimage.empty())
 				{
 					create_directory_from_file(outimage);
-					imwrite(outimage, display_image);	
+					bool write_success = imwrite(outimage, display_image);	
+
+					if (!write_success)
+					{
+						cout << "Could not output a processed image" << endl;
+						return 1;
+					}
 				}
 			}
 		}				
