@@ -131,23 +131,27 @@ void get_video_input_output_params(vector<string> &input_video_files, vector<str
 	string input_root = "";
 	string output_root = "";
 
+	string separator = string(1, boost::filesystem::path::preferred_separator);
+
 	// First check if there is a root argument (so that videos and outputs could be defined more easilly)
 	for(size_t i = 0; i < arguments.size(); ++i)
 	{
 		if (arguments[i].compare("-root") == 0)
 		{
-			input_root = arguments[i + 1];
-			output_root = arguments[i + 1];
+			input_root = arguments[i + 1] + separator;
+			output_root = arguments[i + 1] + separator;
+
+			// Add the / or \ to the directory
 			i++;
 		}
 		if (arguments[i].compare("-inroot") == 0)
 		{
-			input_root = arguments[i + 1];
+			input_root = arguments[i + 1] + separator;
 			i++;
 		}
 		if (arguments[i].compare("-outroot") == 0)
 		{
-			output_root = arguments[i + 1];
+			output_root = arguments[i + 1] + separator;
 			i++;
 		}
 	}
@@ -265,19 +269,45 @@ void get_image_input_output_params(vector<string> &input_image_files, vector<str
 	
 	string out_pts_dir, out_pose_dir, out_img_dir;
 
+	string input_root = "";
+	string output_root = "";
+
+	string separator = string(1, boost::filesystem::path::preferred_separator);
+
+	// First check if there is a root argument (so that videos and outputs could be defined more easilly)
+	for (size_t i = 0; i < arguments.size(); ++i)
+	{
+		if (arguments[i].compare("-root") == 0)
+		{
+			input_root = arguments[i + 1] + separator;
+			output_root = arguments[i + 1] + separator;
+			i++;
+		}
+		if (arguments[i].compare("-inroot") == 0)
+		{
+			input_root = arguments[i + 1] + separator;
+			i++;
+		}
+		if (arguments[i].compare("-outroot") == 0)
+		{
+			output_root = arguments[i + 1] + separator;
+			i++;
+		}
+	}
+
 	for(size_t i = 0; i < arguments.size(); ++i)
 	{
 		valid[i] = true;
 		if (arguments[i].compare("-f") == 0) 
 		{                    
-			input_image_files.push_back(arguments[i + 1]);
+			input_image_files.push_back(input_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i+1] = false;			
 			i++;
 		}		
 		else if (arguments[i].compare("-fd") == 0) 
 		{                    
-			input_depth_files.push_back(arguments[i + 1]);
+			input_depth_files.push_back(input_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i+1] = false;		
 			i++;
@@ -367,21 +397,21 @@ void get_image_input_output_params(vector<string> &input_image_files, vector<str
 		}
 		else if (arguments[i].compare("-op") == 0)
 		{
-			output_pose_files.push_back(arguments[i + 1]);
+			output_pose_files.push_back(output_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i + 1] = false;
 			i++;
 		}
 		else if (arguments[i].compare("-of") == 0)
 		{
-			output_feature_files.push_back(arguments[i + 1]);
+			output_feature_files.push_back(output_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i+1] = false;
 			i++;
 		} 
 		else if (arguments[i].compare("-oi") == 0)
 		{
-			output_image_files.push_back(arguments[i + 1]);
+			output_image_files.push_back(output_root + arguments[i + 1]);
 			valid[i] = false;
 			valid[i+1] = false;
 			i++;

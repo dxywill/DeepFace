@@ -1039,17 +1039,19 @@ void get_output_feature_params(vector<string> &output_similarity_aligned, vector
 	// By default the model is dynamic
 	dynamic = true;
 
+	string separator = string(1, boost::filesystem::path::preferred_separator);
+
 	// First check if there is a root argument (so that videos and outputs could be defined more easilly)
 	for (size_t i = 0; i < arguments.size(); ++i)
 	{
 		if (arguments[i].compare("-root") == 0)
 		{
-			output_root = arguments[i + 1];
+			output_root = arguments[i + 1] + separator;
 			i++;
 		}
 		if (arguments[i].compare("-outroot") == 0)
 		{
-			output_root = arguments[i + 1];
+			output_root = arguments[i + 1] + separator;
 			i++;
 		}
 	}

@@ -402,6 +402,12 @@ int main (int argc, char **argv)
 		// Loading image
 		cv::Mat read_image = cv::imread(file, -1);
 
+		if (read_image.empty())
+		{
+			cout << "Could not read the input image" << endl;
+			return 1;
+		}
+
 		// Loading depth file if exists (optional)
 		cv::Mat_<float> depth_image;
 

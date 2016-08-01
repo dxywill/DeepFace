@@ -65,6 +65,7 @@ script:
   - cmake -D CMAKE_BUILD_TYPE=RELEASE .. 
   - make -j2
   - ../build/bin/FaceLandmarkImg -fdir "../videos/" -ofdir "./demo_img/" -oidir "./demo_img/" -wild -q
-  - ../build/bin/FaceLandmarkVidMulti -f ../videos/multi_face.avi -ov multi_face.avi -q
-  - ../build/bin/FeatureExtraction -f "../videos/1815_01_008_tony_blair.avi" -ov blair.avi -of "output_features/1815_01_008_tony_blair.txt" -simalign output_features/aligned -ov feat_test.avi -hogalign hog_test.dat -q
-  - ../build/bin/FaceLandmarkVid -f "../videos/1815_01_008_tony_blair.avi" -f "../videos/0188_03_021_al_pacino.avi" -f "../videos/0217_03_006_alanis_morissette.avi" -f "../videos/0244_03_004_anderson_cooper.avi" -q
+  - ../build/bin/FaceLandmarkImg -inroot ../videos -f obama.jpg -outroot data -of obama.txt -op obama.3d -oi obama.jpg -multi_view 1 -wild -q
+  - ../build/bin/FaceLandmarkVidMulti -inroot ../videos -f multi_face.avi -outroot output -ov multi_face.avi -q
+  - ../build/bin/FeatureExtraction -f "../videos/1815_01_008_tony_blair.avi" -outroot output_features -ov blair.avi -of "1815_01_008_tony_blair.txt" -simalign aligned -ov feat_test.avi -hogalign hog_test.dat -q
+  - ../build/bin/FaceLandmarkVid -inroot ../videos -f 1815_01_008_tony_blair.avi -f 0188_03_021_al_pacino.avi -f 0217_03_006_alanis_morissette.avi -outroot output_data -ov 1.avi -ov 2.avi -ov 3.avi -q
