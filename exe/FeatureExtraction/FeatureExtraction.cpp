@@ -815,16 +815,16 @@ void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string 
 			{
 				if(t - begin_ind < num_reg)
 				{
-					outfile << "," << predictions_reg[inds_reg[t - begin_ind]].second[i - 1];
+					outfile << ", " << predictions_reg[inds_reg[t - begin_ind]].second[i - 1];
 				}
 				else
 				{
-					outfile << "," << predictions_class[inds_class[t - begin_ind - num_reg]].second[i - 1];
+					outfile << ", " << predictions_class[inds_class[t - begin_ind - num_reg]].second[i - 1];
 				}
 			}
 			else
 			{
-				outfile << "," << tokens[t];
+				outfile << ", " << tokens[t];
 			}
 		}
 		outfile << endl;
@@ -929,8 +929,15 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 	// Output the estimated head pose
 	if (output_pose)
 	{
-		*output_file << ", " << pose_estimate[0] << ", " << pose_estimate[1] << ", " << pose_estimate[2]
-			<< ", " << pose_estimate[3] << ", " << pose_estimate[4] << ", " << pose_estimate[5];
+		if(face_model.tracking_initialised)
+		{
+			*output_file << ", " << pose_estimate[0] << ", " << pose_estimate[1] << ", " << pose_estimate[2]
+				<< ", " << pose_estimate[3] << ", " << pose_estimate[4] << ", " << pose_estimate[5];
+		}
+		else
+		{
+			*output_file << ", 0, 0, 0, 0, 0, 0";
+		}
 	}
 
 	// Output the detected 2D facial landmarks
@@ -938,7 +945,14 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 	{
 		for (int i = 0; i < face_model.pdm.NumberOfPoints() * 2; ++i)
 		{
-			*output_file << ", " << face_model.detected_landmarks.at<double>(i);
+			if(face_model.tracking_initialised)
+			{
+				*output_file << ", " << face_model.detected_landmarks.at<double>(i);
+			}
+			else
+			{
+				*output_file << ", 0";
+			}
 		}
 	}
 
@@ -948,7 +962,14 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 		cv::Mat_<double> shape_3D = face_model.GetShape(fx, fy, cx, cy);
 		for (int i = 0; i < face_model.pdm.NumberOfPoints() * 3; ++i)
 		{
-			*output_file << ", " << shape_3D.at<double>(i);
+			if (face_model.tracking_initialised)
+			{
+				*output_file << ", " << shape_3D.at<double>(i);
+			}
+			else
+			{
+				*output_file << ", 0";
+			}
 		}
 	}
 
@@ -956,11 +977,25 @@ void outputAllFeatures(std::ofstream* output_file, bool output_2D_landmarks, boo
 	{
 		for (int i = 0; i < 6; ++i)
 		{
-			*output_file << ", " << face_model.params_global[i];
+			if (face_model.tracking_initialised)
+			{
+				*output_file << ", " << face_model.params_global[i];
+			}
+			else
+			{
+				*output_file << ", 0";
+			}
 		}
 		for (int i = 0; i < face_model.pdm.NumberOfModes(); ++i)
 		{
-			*output_file << ", " << face_model.params_local.at<double>(i, 0);
+			if(face_model.tracking_initialised)
+			{
+				*output_file << ", " << face_model.params_local.at<double>(i, 0);
+			}
+			else
+			{
+				*output_file << ", 0";
+			}
 		}
 	}
 
