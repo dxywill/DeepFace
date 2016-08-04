@@ -16,4 +16,4 @@ target_link_libraries(FaceLandmarkVid dlib)
 
 target_link_libraries(FaceLandmarkVid ${OpenCV_LIBS} ${Boost_LIBRARIES} ${TBB_LIBRARIES})
 
-install (TARGETS FaceLandmarkVid DESTINATION ${CMAKE_BINARY_DIR}/bin)
+install (TARGETS FaceLandmarkVid DESTINATION bin)
