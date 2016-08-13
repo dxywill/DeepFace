@@ -786,7 +786,7 @@ void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string 
 
 	int begin_ind = -1;
 	
-	for (int i = 0; i < tokens.size(); ++i)
+	for (size_t i = 0; i < tokens.size(); ++i)
 	{
 		if (tokens[i].find("AU") != string::npos && begin_ind == -1)
 		{
@@ -802,14 +802,14 @@ void post_process_output_file(FaceAnalysis::FaceAnalyser& face_analyser, string 
 	outfile << output_file_contents[0].c_str() << endl;
 	
 	// Write the contents
-	for (int i = 1; i < output_file_contents.size(); ++i)
+	for (size_t i = 1; i < output_file_contents.size(); ++i)
 	{
 		std::vector<std::string> tokens;
 		boost::split(tokens, output_file_contents[i], boost::is_any_of(","));
 
 		outfile << tokens[0];
 
-		for (int t = 1; t < tokens.size(); ++t)
+		for (size_t t = 1; t < tokens.size(); ++t)
 		{
 			if (t >= begin_ind && t < end_ind)
 			{
