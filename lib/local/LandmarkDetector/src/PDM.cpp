@@ -184,7 +184,7 @@ void PDM::CalcShape2D(cv::Mat_<double>& out_shape, const cv::Mat_<double>& param
 	cv::Mat_<double> Shape_3D = mean_shape + princ_comp * params_local;
 
 	// create the 2D shape matrix (if it has not been defined yet)
-	if((out_shape.rows != mean_shape.rows) || (out_shape.cols = 1))
+	if((out_shape.rows != mean_shape.rows) || (out_shape.cols != 1))
 	{
 		out_shape.create(2*n,1);
 	}
