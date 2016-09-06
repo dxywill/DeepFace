@@ -1,8 +1,6 @@
 % This is sort of the unit test for the whole module (needs datasets)
 % Will take over an hour to run all
 
-% TODO need some unit testy things, some asserts
-
 tic
 %% Head pose
 cd('Head Pose Experiments');

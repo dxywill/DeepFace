@@ -194,11 +194,11 @@ void FaceAnalysis::DrawGaze(cv::Mat img, const LandmarkDetector::CLNF& clnf_mode
 	cv::Mat_<double> proj_points;
 	cv::Mat_<double> mesh_0 = (cv::Mat_<double>(2, 3) << points_left[0].x, points_left[0].y, points_left[0].z, points_left[1].x, points_left[1].y, points_left[1].z);
 	LandmarkDetector::Project(proj_points, mesh_0, fx, fy, cx, cy);
-	cv::line(img, cv::Point(cvRound(proj_points.at<double>(0,0) * gaze_draw_multiplier), cvRound(proj_points.at<double>(0, 1) * gaze_draw_multiplier)),
-		cv::Point(cvRound(proj_points.at<double>(1, 0) * gaze_draw_multiplier), cvRound(proj_points.at<double>(1, 1) * gaze_draw_multiplier)), cv::Scalar(110, 220, 0), 2, CV_AA, gaze_draw_shiftbits);
+	cv::line(img, cv::Point(cvRound(proj_points.at<double>(0,0) * (double)gaze_draw_multiplier), cvRound(proj_points.at<double>(0, 1) * (double)gaze_draw_multiplier)),
+		cv::Point(cvRound(proj_points.at<double>(1, 0) * (double)gaze_draw_multiplier), cvRound(proj_points.at<double>(1, 1) * (double)gaze_draw_multiplier)), cv::Scalar(110, 220, 0), 2, CV_AA, gaze_draw_shiftbits);
 
 	cv::Mat_<double> mesh_1 = (cv::Mat_<double>(2, 3) << points_right[0].x, points_right[0].y, points_right[0].z, points_right[1].x, points_right[1].y, points_right[1].z);
 	LandmarkDetector::Project(proj_points, mesh_1, fx, fy, cx, cy);
-	cv::line(img, cv::Point(cvRound(proj_points.at<double>(0, 0) * gaze_draw_multiplier), cvRound(proj_points.at<double>(0, 1) * gaze_draw_multiplier)),
-		cv::Point(cvRound(proj_points.at<double>(1, 0) * gaze_draw_multiplier), cvRound(proj_points.at<double>(1, 1) * gaze_draw_multiplier)), cv::Scalar(110, 220, 0), 2, CV_AA, gaze_draw_shiftbits);
+	cv::line(img, cv::Point(cvRound(proj_points.at<double>(0, 0) * (double)gaze_draw_multiplier), cvRound(proj_points.at<double>(0, 1) * (double)gaze_draw_multiplier)),
+		cv::Point(cvRound(proj_points.at<double>(1, 0) * (double)gaze_draw_multiplier), cvRound(proj_points.at<double>(1, 1) * (double)gaze_draw_multiplier)), cv::Scalar(110, 220, 0), 2, CV_AA, gaze_draw_shiftbits);
 }

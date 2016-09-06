@@ -191,7 +191,7 @@ FaceModelParameters::FaceModelParameters(vector<string> &arguments)
 		}
 	}
 
-	for (int i = arguments.size() - 1; i >= 0; --i)
+	for (int i = (int)arguments.size() - 1; i >= 0; --i)
 	{
 		if (!valid[i])
 		{

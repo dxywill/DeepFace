@@ -904,8 +904,8 @@ void DrawBox(cv::Mat image, cv::Vec6d pose, cv::Scalar color, int thickness, flo
 		rotBoxProj.row(edges[i].second).copyTo(end);
 
 
-		cv::Point p1(cvRound(begin.at<double>(0) * draw_multiplier), cvRound(begin.at<double>(1) * draw_multiplier));
-		cv::Point p2(cvRound(end.at<double>(0) * draw_multiplier), cvRound(end.at<double>(1) * draw_multiplier));
+		cv::Point p1(cvRound(begin.at<double>(0) * (double)draw_multiplier), cvRound(begin.at<double>(1) * (double)draw_multiplier));
+		cv::Point p2(cvRound(end.at<double>(0) * (double)draw_multiplier), cvRound(end.at<double>(1) * (double)draw_multiplier));
 		
 		// Only draw the line if one of the points is inside the image
 		if(p1.inside(image_rect) || p2.inside(image_rect))
@@ -1076,7 +1076,7 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& vis
 		{		
 			if(visibilities.at<int>(i))
 			{
-				cv::Point featurePoint(cvRound(shape2D.at<double>(i) * draw_multiplier), cvRound(shape2D.at<double>(i + n) * draw_multiplier));
+				cv::Point featurePoint(cvRound(shape2D.at<double>(i) * (double)draw_multiplier), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier));
 
 				// A rough heuristic for drawn point size
 				int thickness = (int)std::ceil(3.0* ((double)img.cols) / 640.0);
@@ -1092,7 +1092,7 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& vis
 	{
 		for( int i = 0; i < n; ++i)
 		{		
-			cv::Point featurePoint(cvRound(shape2D.at<double>(i) * draw_multiplier), cvRound(shape2D.at<double>(i + n) * draw_multiplier));
+			cv::Point featurePoint(cvRound(shape2D.at<double>(i) * (double)draw_multiplier), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier));
 
 			// A rough heuristic for drawn point size
 			int thickness = 1.0;
@@ -1106,7 +1106,7 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& vis
 			if(i == 27)
 				next_point = 20;
 
-			cv::Point nextFeaturePoint(cvRound(shape2D.at<double>(next_point) * draw_multiplier), cvRound(shape2D.at<double>(next_point + n) * draw_multiplier));
+			cv::Point nextFeaturePoint(cvRound(shape2D.at<double>(next_point) * (double)draw_multiplier), cvRound(shape2D.at<double>(next_point + n) * (double)draw_multiplier));
 			if( i < 8 || i > 19)
 				cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits);
 			else
@@ -1119,7 +1119,7 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& vis
 	{
 		for( int i = 0; i < n; ++i)
 		{		
-			cv::Point featurePoint(cvRound(shape2D.at<double>(i) * draw_multiplier), cvRound(shape2D.at<double>(i + n) * draw_multiplier));
+			cv::Point featurePoint(cvRound(shape2D.at<double>(i) * (double)draw_multiplier), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier));
 
 			// A rough heuristic for drawn point size
 			int thickness = 1.0;
@@ -1129,7 +1129,7 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D, const cv::Mat_<int>& vis
 			if(i == 5)
 				next_point = 0;
 
-			cv::Point nextFeaturePoint(cvRound(shape2D.at<double>(next_point) * draw_multiplier), cvRound(shape2D.at<double>(next_point + n) * draw_multiplier));
+			cv::Point nextFeaturePoint(cvRound(shape2D.at<double>(next_point) * (double)draw_multiplier), cvRound(shape2D.at<double>(next_point + n) * (double)draw_multiplier));
 			cv::line(img, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits);
 		}
 	}
@@ -1155,11 +1155,11 @@ void Draw(cv::Mat img, const cv::Mat_<double>& shape2D)
 		cv::Point featurePoint;
 		if(shape2D.cols == 1)
 		{
-			featurePoint = cv::Point(cvRound(shape2D.at<double>(i) * draw_multiplier), cvRound(shape2D.at<double>(i + n) * draw_multiplier));
+			featurePoint = cv::Point(cvRound(shape2D.at<double>(i) * (double)draw_multiplier), cvRound(shape2D.at<double>(i + n) * (double)draw_multiplier));
 		}
 		else
 		{
-			featurePoint = cv::Point(cvRound(shape2D.at<double>(i, 0) * draw_multiplier), cvRound(shape2D.at<double>(i, 1) * draw_multiplier));
+			featurePoint = cv::Point(cvRound(shape2D.at<double>(i, 0) * (double)draw_multiplier), cvRound(shape2D.at<double>(i, 1) * (double)draw_multiplier));
 		}
 		// A rough heuristic for drawn point size
 		int thickness = (int)std::ceil(5.0* ((double)img.cols) / 640.0);
