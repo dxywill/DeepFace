@@ -645,7 +645,7 @@ bool CLNF::DetectLandmarks(const cv::Mat_<uchar> &image, const cv::Mat_<float> &
 		if(parts_used)
 		{
 
-			for (int part_model = 0; part_model < hierarchical_models.size(); ++part_model)
+			for (size_t part_model = 0; part_model < hierarchical_models.size(); ++part_model)
 			{
 				vector<pair<int, int>> mappings = this->hierarchical_mapping[part_model];
 

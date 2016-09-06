@@ -23,9 +23,11 @@ namespace dlib
 
         cv_image (const cv::Mat img) 
         {
-            DLIB_CASSERT(img.depth() == cv::DataType<typename pixel_traits<pixel_type>::basic_pixel_type>::depth &&
-                         img.channels() == pixel_traits<pixel_type>::num, 
-                         "The pixel type you gave doesn't match pixel used by the open cv Mat object.");
+			assert(img.depth() == cv::DataType<typename pixel_traits<pixel_type>::basic_pixel_type>::depth &&
+				img.channels() == pixel_traits<pixel_type>::num);
+            //DLIB_CASSERT(img.depth() == cv::DataType<typename pixel_traits<pixel_type>::basic_pixel_type>::depth &&
+            //             img.channels() == pixel_traits<pixel_type>::num, 
+            //             "The pixel type you gave doesn't match pixel used by the open cv Mat object.");
             IplImage temp = img;
             init(&temp);
         }

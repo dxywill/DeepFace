@@ -707,7 +707,7 @@ void FaceAnalyser::ExtractAllPredictionsOfflineReg(vector<std::pair<std::string,
 
 			// Find the current id of the AU and the corresponding cutoff
 			int au_id = -1;
-			for (int a = 0; a < dyn_au_names.size(); ++a)
+			for (size_t a = 0; a < dyn_au_names.size(); ++a)
 			{
 				if (au_name.compare(dyn_au_names[a]) == 0)
 				{

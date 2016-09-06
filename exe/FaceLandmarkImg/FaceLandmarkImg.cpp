@@ -224,7 +224,7 @@ void write_out_landmarks(const string& outfeatures, const LandmarkDetector::CLNF
 		featuresFile << "au intensities: " << au_intensities.size() << endl;
 		featuresFile << "{" << endl;
 
-		for (int i = 0; i < au_intensities.size(); ++i)
+		for (size_t i = 0; i < au_intensities.size(); ++i)
 		{
 			// Use matlab format, so + 1
 			featuresFile << au_intensities[i].first << " " << au_intensities[i].second << endl;
@@ -236,7 +236,7 @@ void write_out_landmarks(const string& outfeatures, const LandmarkDetector::CLNF
 		featuresFile << "au occurences: " << au_occurences.size() << endl;
 		featuresFile << "{" << endl;
 
-		for (int i = 0; i < au_occurences.size(); ++i)
+		for (size_t i = 0; i < au_occurences.size(); ++i)
 		{
 			// Use matlab format, so + 1
 			featuresFile << au_occurences[i].first << " " << au_occurences[i].second << endl;
