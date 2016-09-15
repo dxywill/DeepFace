@@ -253,7 +253,8 @@ int main (int argc, char **argv)
 	
 	// Indicates that rotation should be with respect to camera or world coordinates
 	bool use_world_coordinates;
-	LandmarkDetector::get_video_input_output_params(input_files, depth_directories, output_files, tracked_videos_output, use_world_coordinates, arguments);
+	string output_codec; //not used but should
+	LandmarkDetector::get_video_input_output_params(input_files, depth_directories, output_files, tracked_videos_output, use_world_coordinates, output_codec, arguments);
 
 	bool video_input = true;
 	bool verbose = true;
@@ -490,7 +491,16 @@ int main (int argc, char **argv)
 		cv::VideoWriter writerFace;
 		if(!tracked_videos_output.empty())
 		{
-			writerFace = cv::VideoWriter(tracked_videos_output[f_n], CV_FOURCC('D', 'I', 'V', 'X'), fps_vid_in, captured_image.size(), true);
+			try
+			{
+				writerFace = cv::VideoWriter(tracked_videos_output[f_n], CV_FOURCC(output_codec[0],output_codec[1],output_codec[2],output_codec[3]), fps_vid_in, captured_image.size(), true);
+			}
+			catch(cv::Exception e)
+			{
+				WARN_STREAM( "Could not open VideoWriter, OUTPUT FILE WILL NOT BE WRITTEN. Currently using codec " << output_codec << ", try using an other one (-oc option)");
+			}
+
+			
 		}
 
 		int frame_count = 0;
