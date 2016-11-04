@@ -5,7 +5,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
-find_package( OpenCV REQUIRED )
+find_package( OpenCV HINTS /usr/local/Cellar/opencv3/3.1.0_4/ )
 MESSAGE("OpenCV information:") 
 MESSAGE("  OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}") 
 MESSAGE("  OpenCV_LIBRARIES: ${OpenCV_LIBRARIES}") 
@@ -23,6 +23,14 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS}/boost)
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})	
 
 find_package(TBB REQUIRED)
+
+find_package( X11 REQUIRED )
+MESSAGE("X11 information:")
+MESSAGE("  X11_INCLUDE_DIR: ${X11_INCLUDE_DIR}")
+MESSAGE("  X11_LIBRARIES: ${X11_LIBRARIES}")
+MESSAGE("  X11_LIBRARY_DIRS: ${X11_LIBRARY_DIRS}")
+include_directories( ${X11_INCLUDE_DIR} )
+
 
 # Move LandmarkDetector model
 file(GLOB files "lib/local/LandmarkDetector/model/*.txt")

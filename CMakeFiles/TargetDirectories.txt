@@ -1,0 +1,7 @@
+/Users/xinyi/Developer/openface/OpenFace/exe/FaceLandmarkVidMulti/CMakeFiles/FaceLandmarkVidMulti.dir
+/Users/xinyi/Developer/openface/OpenFace/exe/FaceLandmarkVid/CMakeFiles/FaceLandmarkVid.dir
+/Users/xinyi/Developer/openface/OpenFace/exe/FaceLandmarkImg/CMakeFiles/FaceLandmarkImg.dir
+/Users/xinyi/Developer/openface/OpenFace/lib/local/FaceAnalyser/CMakeFiles/FaceAnalyser.dir
+/Users/xinyi/Developer/openface/OpenFace/exe/FeatureExtraction/CMakeFiles/FeatureExtraction.dir
+/Users/xinyi/Developer/openface/OpenFace/lib/local/LandmarkDetector/CMakeFiles/LandmarkDetector.dir
+/Users/xinyi/Developer/openface/OpenFace/lib/3rdParty/dlib/CMakeFiles/dlib.dir
