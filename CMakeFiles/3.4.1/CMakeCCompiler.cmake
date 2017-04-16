@@ -1,7 +1,7 @@
 set(CMAKE_C_COMPILER "/Library/Developer/CommandLineTools/usr/bin/cc")
 set(CMAKE_C_COMPILER_ARG1 "")
 set(CMAKE_C_COMPILER_ID "AppleClang")
-set(CMAKE_C_COMPILER_VERSION "7.3.0.7030031")
+set(CMAKE_C_COMPILER_VERSION "8.1.0.8020038")
 set(CMAKE_C_STANDARD_COMPUTED_DEFAULT "11")
 set(CMAKE_C_COMPILE_FEATURES "c_function_prototypes;c_restrict;c_variadic_macros;c_static_assert")
 set(CMAKE_C90_COMPILE_FEATURES "c_function_prototypes")
@@ -61,6 +61,6 @@ endif()
 
 
 
-set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "/Library/Developer/CommandLineTools/usr/lib/clang/7.3.0/lib/darwin/libclang_rt.osx.a")
+set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "to_library;/Library/Developer/CommandLineTools/usr/lib/clang/8.1.0/lib/darwin/libclang_rt.osx.a")
 set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/usr/lib;/usr/local/lib")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "/Library/Frameworks;/System/Library/Frameworks")
